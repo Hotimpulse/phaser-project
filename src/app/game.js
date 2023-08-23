@@ -39,9 +39,7 @@ function loadGui(score, remainingLives) {
 // game logic
 
 const gridCells = document.querySelectorAll('.grid-cell');
-let remainingLives = 3;
-let score = 0;
-loadGui(score, remainingLives);
+loadGui(0, 3);
 
 const starImg = document.createElement('img');
 starImg.src = './assets/imgs/star.png';
@@ -55,6 +53,8 @@ pacmanImg.style.width = `2rem`;
 
 function initializeGame(level) {
   let currentLevel = Number(localStorage.getItem('level'));
+  let remainingLives = 3;
+  let score = 0;
   switch (currentLevel) {
 
     case 1:
@@ -69,15 +69,18 @@ function initializeGame(level) {
         cell.addEventListener('click', () => {
           if (rowValue === 1 && colValue === 0) {
             console.log('Correct click! You won!');
-            localStorage.setItem('level', String(level + 1));
-            initializeGame(level + 1);
+            showStar(1, 0);
+            setTimeout(() => {
+              localStorage.setItem('level', String(level + 1));
+              initializeGame(level + 1);
+            }, 1000);
+            
             score += 2;
             loadGui(score, remainingLives);
           }
           if (rowValue !== 1 && colValue !== 0) {
-            console.log('Incorrect click. Try again.');
-            score--;
-            remainingLives--;
+            score -= 1;
+            remainingLives -= 1;
             loadGui(score, remainingLives);
             if (remainingLives < 0) {
               console.log(`Game over!`);
@@ -98,15 +101,18 @@ function initializeGame(level) {
         cell.addEventListener('click', () => {
           if (rowValue === 0 && colValue === 2) {
             console.log('Correct click! You won!');
-            localStorage.setItem('level', String(level + 1));
-            initializeGame(level + 1);
+            showStar(0, 2);
+            setTimeout(() => {
+              localStorage.setItem('level', String(level + 1));
+              initializeGame(level + 1);
+            }, 1000);
             score += 2;
             loadGui(score, remainingLives);
+            // cell.removeEventListener('click', () => {});
           }
           if (rowValue !== 0 && colValue !== 2) {
-            console.log('Incorrect click. Try again.');
-            score--;
-            remainingLives--;
+            score -= 1;
+            remainingLives -= 1;
             loadGui(score, remainingLives);
             if (remainingLives < 0) {
               console.log(`Game over!`);
@@ -127,11 +133,17 @@ function initializeGame(level) {
         cell.addEventListener('click', () => {
           if (rowValue === 0 && colValue === 1) {
             console.log('Correct click! You won!');
-            localStorage.setItem('level', String(level + 1));
-            initializeGame(level + 1);
+            showStar(0, 1);
+            setTimeout(() => {
+              localStorage.setItem('level', String(level + 1));
+              initializeGame(level + 1);
+            }, 1000);
+            score += 2;
+            loadGui(score, remainingLives);
           } else if (rowValue !== 0 && colValue !== 1) {
-            console.log('Incorrect click. Try again.');
-            remainingLives--;
+            score -= 1;
+            remainingLives -= 1;
+            loadGui(score, remainingLives);
             if (remainingLives < 0) {
               console.log(`Game over!`);
               return;
@@ -151,11 +163,17 @@ function initializeGame(level) {
         cell.addEventListener('click', () => {
           if (rowValue === 2 && colValue === 2) {
             console.log('Correct click! You won!');
-            localStorage.setItem('level', String(level + 1));
-            initializeGame(level + 1);
+            showStar(2, 2);
+            setTimeout(() => {
+              localStorage.setItem('level', String(level + 1));
+              initializeGame(level + 1);
+            }, 1000);
+            score += 2;
+            loadGui(score, remainingLives);
           } else if (rowValue !== 0 && colValue !== 0) {
-            console.log('Incorrect click. Try again.');
-            remainingLives--;
+            score -= 1;
+            remainingLives -= 1;
+            loadGui(score, remainingLives);
             if (remainingLives < 0) {
               console.log(`Game over!`);
               return;
@@ -175,12 +193,17 @@ function initializeGame(level) {
         cell.addEventListener('click', () => {
           if (rowValue === 0 && colValue === 0) {
             console.log('Correct click! You won!');
-            gridCells[0].appendChild(pacmanImg);
-            window.location.reload();
+            showStar(0, 0);
+            setTimeout(() => {
+              gridCells[0].appendChild(pacmanImg);
+            }, 1000);
+            score += 2;
+            loadGui(score, remainingLives);
             localStorage.setItem('lesson3', 'passed');
           } else if (rowValue !== 0 && colValue !== 0) {
-            console.log('Incorrect click. Try again.');
-            remainingLives--;
+            score -= 1;
+            remainingLives -= 1;
+            loadGui(score, remainingLives);
             if (remainingLives < 0) {
               console.log(`Game over!`);
             }
@@ -244,7 +267,9 @@ let handleStarCheck = (level, row, col) => {
 function showStar(row, col) {
   const cellIndex = row * 3 + col;
   const cell = gridCells[cellIndex];
-  starImg.style.opacity = 1;
   cell.innerHTML = '';
   cell.appendChild(starImg);
+  setTimeout(() => {
+    starImg.classList.add('star-animation');
+  }, 100)
 }

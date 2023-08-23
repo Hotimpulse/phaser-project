@@ -5,5 +5,6 @@ import css from './styles/index.css';
 let startBtn = document.getElementById('btn2');
 
 startBtn.addEventListener('click', async () => {
+    startBtn.disabled = true;
     createGameDiv();
 })
