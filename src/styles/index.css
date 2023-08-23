@@ -4,14 +4,132 @@
   box-sizing: border-box;
 }
 
+body {
+  font-size: 1.5rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
 #main-wrapper {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
 }
 
 #game {
   display: flex;
-  background-color: black;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 50rem;
+}
+
+#button-run {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 6rem;
+  height: 2.5rem;
+  background-color: red;
+  color: white;
+  border-radius: 0.4rem;
+  margin: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+#button-run:hover {
+  background-color: yellow;
+  color: black;
+}
+
+#name-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: min(100% - 0rem, 25rem);
+  height: 12.49744rem;
+  background-color: white;
+  border-radius: 1rem;
+  position: absolute;
+  top: 7rem;
+  left: 22.5rem;
+}
+#name-card > * {
+  width: 7.52175rem;
+  height: 7.52175rem;
+  cursor: pointer;
+  margin: 2.5rem;
+}
+
+#rect_points {
+  display: flex;
+  width: min(100% - 0rem, 25rem);
+  height: 14.09738rem;
+  background-color: white;
+  border-radius: 1rem;
+  position: absolute;
+  top: 22rem;
+  left: 22.5rem;
+}
+
+#rect_small {
+  display: flex;
+  width: min(100% - 0rem, 25rem);
+  height: 6.53363rem;
+  background-color: white;
+  border-radius: 1rem;
+  position: absolute;
+  top: 39rem;
+  left: 22.5rem;
+}
+
+#rect_small2 {
+  display: flex;
+  width: min(100% - 0rem, 25rem);
+  height: 6.53363rem;
+  background-color: white;
+  border-radius: 1rem;
+  position: absolute;
+  top: 48rem;
+  left: 22.5rem;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  gap: 5px;
+}
+
+.grid-cell {
+  width: 100px;
+  height: 100px;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+.grid-cell:hover {
+  background-color: wheat;
+}
+
+.cell.yellow {
+  background-color: yellow;
+}
+
+.cell.red {
+  background-color: red;
+}
+
+#score-count {
+  display: flex;
+  width: 300px;
+  border: 1px solid black;
+}
+
+#lives-count {
+  display: flex;
+  width: 300px;
+  border: 1px solid black;
 }/*# sourceMappingURL=index.css.map */

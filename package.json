@@ -2,7 +2,7 @@
   "name": "webpack-setup",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --open",
@@ -15,16 +15,16 @@
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.1",
     "phaser": "^v3.60.0-beta.23",
-    "ts-loader": "^9.4.1",
+    "url-loader": "^4.1.1",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
-    "phaser": "^3.55.2",
-    "typescript": "^5.1.6"
+    "phaser": "^3.55.2"
   }
 }

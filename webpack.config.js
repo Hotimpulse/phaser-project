@@ -10,14 +10,15 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 const config = {
-  entry: "./src/index.ts",
+  entry: "./src/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "index.bundle.js",
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename:"bundle.css"}),
+      filename: "bundle.css"
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "src/index.html"),
       filename: "index.html",
@@ -26,16 +27,22 @@ const config = {
     new CopyWebpackPlugin({
       patterns: [
         { from: "src/assets/imgs", to: "assets/imgs" },
-        // { from: "src/assets/SVG", to: "assets/SVG" },
+        { from: "src/assets/SVG", to: "assets/SVG" },
       ],
     }),
   ],
   module: {
     rules: [
       {
-        test: /\.(ts|tsx|js)$/i,
-        loader: "ts-loader",
-        exclude: /node_modules/,
+        test: /\.mp3$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: `assets/sounds`
+            }
+          }
+        ]
       },
       {
         test: /\.css$/i,
@@ -56,7 +63,7 @@ const config = {
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".jsx", ".js"],
+    extensions: [".jsx", ".js"],
   },
 };
 
