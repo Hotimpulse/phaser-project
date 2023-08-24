@@ -44,20 +44,20 @@ export function playTaskAudio(task) {
 };
 
 async function playTask1() {
-    upAudio.play().then(setTimeout(() => { leftAudio.play() }, 2000))
-        .then(setTimeout(() => { click.play() }, 4000));
+    upAudio.play().then(setTimeout(() => { leftAudio.play() }, 1000))
+        .then(setTimeout(() => { click.play() }, 2000));
 };
 
 async function playTask2() {
     rightAudio.play().then(setTimeout(() => { rightAudio.play() }, 2000))
-        .then(setTimeout(() => { upAudio.play() }, 4000))
-        .then(setTimeout(() => { click.play() }, 6000))
+        .then(setTimeout(() => { upAudio.play() }, 3000))
+        .then(setTimeout(() => { click.play() }, 4000))
 };
 
 async function playTask3() {
-    downAudio.play().then(setTimeout(() => { leftAudio.play() }, 2000))
-        .then(setTimeout(() => { upAudio.play() }, 4000))
-        .then(setTimeout(() => { click.play() }, 6000))
+    downAudio.play().then(setTimeout(() => { leftAudio.play() }, 1500))
+        .then(setTimeout(() => { upAudio.play() }, 2500))
+        .then(setTimeout(() => { click.play() }, 4000))
 };
 
 async function playTask4() {

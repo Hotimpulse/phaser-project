@@ -144,6 +144,50 @@ body {
   border: 1px solid black;
 }
 
+// ui 
+
+#dialog-loss {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  visibility: hidden;
+
+  text-align: center;
+  text-wrap: balance;
+
+  width: 100vw;
+  height: 100vh;
+
+  background-color: lightgreen;
+  color: white;
+
+  font-size: 2rem;
+  font-weight: 900;
+
+  & button {
+    margin-top: 2rem;
+    border: none;
+    width: 8rem;
+    height: 3rem;
+
+    border-radius: 0.3rem;
+    background-color: teal;
+    color: white;
+
+    font-size: 1.5rem;
+  }
+}
+
+// svgs
+
+#red-ghost {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+} 
+
 // animations
 
 .star-animation {
