@@ -25,8 +25,6 @@ document.body.appendChild(scoreCount);
 document.body.appendChild(livesCount);
 let gridContainer = document.querySelector('.grid-container');
 
-
-
 let remainingLives, score;
 function loadGui(score, remainingLives) {
 
@@ -69,7 +67,7 @@ function addDialogWindow() {
     dialogWindow.style.visibility = 'visible';
     dialogWindow.textContent = `Тотальный провал! Так держать!`;
     dialogWindow.appendChild(closeDialogBtn);
-    clearInterval(dialogInterval);
+    
     closeDialogBtn.addEventListener('click', () => {
       dialogWindow.close();
       document.body.removeChild(dialogWindow);
@@ -81,7 +79,7 @@ function addDialogWindow() {
     dialogWindow.style.visibility = 'visible';
     dialogWindow.textContent = `Здорово! Так держать!`;
     dialogWindow.appendChild(closeDialogBtn);
-    clearInterval(dialogInterval);
+    
     closeDialogBtn.addEventListener('click', () => {
       dialogWindow.close();
       document.body.removeChild(dialogWindow);
@@ -93,76 +91,43 @@ function addDialogWindow() {
 
 loadGui(score = 0, remainingLives = 3);
 
+
 function initializeGame(level) {
-
-  let currentLevel = Number(localStorage.getItem('level'));
-
-  switch (currentLevel) {
-
-    case 1:
-      gridCells[7].appendChild(pacmanImg);
-      playTaskAudio(1);
-
-      gridCells.forEach(cell => {
-        const rowValue = parseInt(cell.getAttribute('data-row'));
-        const colValue = parseInt(cell.getAttribute('data-col'));
-
-        if (rowValue === 1 && colValue === 0) {
-          cell.addEventListener('click', () => {
-            if (!cell.classList.contains('clicked')) {
-              console.log('Correct click! You won!');
-              showStar(1, 0);
-              cell.classList.add('clicked');
-              setTimeout(() => {
-                localStorage.setItem('level', String(level + 1));
-                initializeGame(level + 1);
-              }, 1000);
-
-              score += 2;
-              loadGui(score, remainingLives);
-            }
-          });
-        }
-      });
-      // else {
-      //       score -= 1;
-      //       remainingLives -= 1;
-      //       loadGui(score, remainingLives);
-      //       if (remainingLives < 0) {
-      //         console.log(`Game over!`);
-      //         addDialogWindow();
-      //         return;
-      //       }
-      //       showGhost(e.target);
-      //     }
-      // });
-      break;
-
-    case 2:
-      gridCells[3].appendChild(pacmanImg);
-      playTaskAudio(2);
-
-      gridCells.forEach(cell => {
-        const rowValue = parseInt(cell.getAttribute('data-row'));
-        const colValue = parseInt(cell.getAttribute('data-col'));
-
-        if (rowValue === 0 && colValue === 2) {
-          cell.addEventListener('click', () => {
-            if (!cell.classList.contains('clicked')) {
-              console.log('Correct click! You won!');
-              showStar(0, 2);
-              cell.classList.add('clicked');
-              setTimeout(() => {
-                localStorage.setItem('level', String(level + 1));
-                initializeGame(level + 1);
-              }, 1000);
-
-              score += 2;
-              loadGui(score, remainingLives);
-            }
-          });
-        }
-        //  else {
+  try {
+    function increaseLevel() {
+      setTimeout(() => {
+        localStorage.setItem('level', String(level + 1));
+        initializeGame(level + 1);
+      }, 1000);
+    }
+  
+    let currentLevel = Number(localStorage.getItem('level'));
+  
+    switch (currentLevel) {
+  
+      case 1:
+        gridCells[7].appendChild(pacmanImg);
+        playTaskAudio(1);
+  
+        gridCells.forEach(cell => {
+          const rowValue = parseInt(cell.getAttribute('data-row'));
+          const colValue = parseInt(cell.getAttribute('data-col'));
+  
+          if (rowValue === 1 && colValue === 0) {
+            cell.addEventListener('click', () => {
+              if (!cell.classList.contains('clicked')) {
+                console.log('Correct click! You won!');
+                showStar(1, 0);
+                cell.classList.add('clicked');
+                increaseLevel();
+  
+                score += 2;
+                loadGui(score, remainingLives);
+              }
+            });
+          }
+        });
+        // else {
         //       score -= 1;
         //       remainingLives -= 1;
         //       loadGui(score, remainingLives);
@@ -173,138 +138,173 @@ function initializeGame(level) {
         //       }
         //       showGhost(e.target);
         //     }
-      });
-
-      break;
-
-    case 3:
-      gridCells[2].appendChild(pacmanImg);
-      playTaskAudio(3);
-
-      gridCells.forEach(cell => {
-        const rowValue = parseInt(cell.getAttribute('data-row'));
-        const colValue = parseInt(cell.getAttribute('data-col'));
-
-        if (rowValue === 0 && colValue === 1) {
-          cell.addEventListener('click', () => {
-            if (!cell.classList.contains('clicked')) {
-              console.log('Correct click! You won!');
-              showStar(0, 1);
-              cell.classList.add('clicked');
-              setTimeout(() => {
-                localStorage.setItem('level', String(level + 1));
-                initializeGame(level + 1);
-              }, 1000);
-
-              score += 2;
+        // });
+        break;
+  
+      case 2:
+        gridCells[3].appendChild(pacmanImg);
+        playTaskAudio(2);
+        
+        gridCells.forEach(cell => {
+          const rowValue = parseInt(cell.getAttribute('data-row'));
+          const colValue = parseInt(cell.getAttribute('data-col'));
+  
+          if (rowValue === 0 && colValue === 2) {
+            cell.addEventListener('click', () => {
+              if (!cell.classList.contains('clicked')) {
+                console.log('Correct click! You won!');
+                showStar(0, 2);
+                cell.classList.add('clicked');
+                increaseLevel();
+  
+                score += 2;
+                loadGui(score, remainingLives);
+              }
+            });
+          }
+          //  else {
+          //       score -= 1;
+          //       remainingLives -= 1;
+          //       loadGui(score, remainingLives);
+          //       if (remainingLives < 0) {
+          //         console.log(`Game over!`);
+          //         addDialogWindow();
+          //         return;
+          //       }
+          //       showGhost(e.target);
+          //     }
+        });
+  
+        break;
+  
+      case 3:
+        gridCells[2].appendChild(pacmanImg);
+        playTaskAudio(3);
+  
+        gridCells.forEach(cell => {
+          const rowValue = parseInt(cell.getAttribute('data-row'));
+          const colValue = parseInt(cell.getAttribute('data-col'));
+  
+          if (rowValue === 0 && colValue === 1) {
+            cell.addEventListener('click', () => {
+              if (!cell.classList.contains('clicked')) {
+                console.log('Correct click! You won!');
+                showStar(0, 1);
+                cell.classList.add('clicked');
+                increaseLevel();
+  
+                score += 2;
+                loadGui(score, remainingLives);
+              }
+            });
+          }
+  
+  
+          // else {
+          //   score -= 1;
+          //   remainingLives -= 1;
+          //   loadGui(score, remainingLives);
+          //   if (remainingLives < 0) {
+          //     console.log(`Game over!`);
+          //     addDialogWindow();
+          //     return;
+          //   }
+          //   showGhost(e.target);
+          // }
+        });
+  
+        break;
+  
+      case 4:
+        gridCells[1].appendChild(pacmanImg);
+        playTaskAudio(4);
+  
+        gridCells.forEach(cell => {
+          const rowValue = parseInt(cell.getAttribute('data-row'));
+          const colValue = parseInt(cell.getAttribute('data-col'));
+  
+          if (rowValue === 2 && colValue === 2) {
+            cell.addEventListener('click', () => {
+              if (!cell.classList.contains('clicked')) {
+                console.log('Correct click! You won!');
+                showStar(2, 2);
+                cell.classList.add('clicked');
+                increaseLevel();
+  
+                score += 2;
+                loadGui(score, remainingLives);
+  
+              }
+            });
+          }
+  
+  
+          // else {
+          //   score -= 1;
+          //   remainingLives -= 1;
+          //   loadGui(score, remainingLives);
+          //   if (remainingLives < 0) {
+          //     console.log(`Game over!`);
+          //     addDialogWindow();
+          //     return;
+          //   }
+          //   showGhost(e.target);
+          // }
+        });
+  
+        break;
+  
+      case 5:
+        gridCells[8].appendChild(pacmanImg);
+        playTaskAudio(5);
+  
+        gridCells.forEach(cell => {
+          const rowValue = parseInt(cell.getAttribute('data-row'));
+          const colValue = parseInt(cell.getAttribute('data-col'));
+  
+          if (rowValue === 0 && colValue === 0) {
+            cell.addEventListener('click', () => {
+              if (!cell.classList.contains('clicked')) {
+                console.log('Correct click! You won!');
+                showStar(0, 0);
+                cell.classList.add('clicked');
+                setTimeout(() => {
+                  gridCells[0].appendChild(pacmanImg);
+                }, 1000);
+  
+                score += 2;
+                loadGui(score, remainingLives);
+                localStorage.setItem('lesson3', 'passed');
+                let check = localStorage.getItem('lesson3');
+                if (check === 'passed') {
+                  addDialogWindow();
+                }
+              }
+            });
+          } else {
+            cell.addEventListener('click', () => {
+              score -= 1;
+              remainingLives -= 1;
               loadGui(score, remainingLives);
-            }
-          });
-        }
-
-
-        // else {
-        //   score -= 1;
-        //   remainingLives -= 1;
-        //   loadGui(score, remainingLives);
-        //   if (remainingLives < 0) {
-        //     console.log(`Game over!`);
-        //     addDialogWindow();
-        //     return;
-        //   }
-        //   showGhost(e.target);
-        // }
-      });
-
-      break;
-
-    case 4:
-      gridCells[1].appendChild(pacmanImg);
-      playTaskAudio(4);
-
-      gridCells.forEach(cell => {
-        const rowValue = parseInt(cell.getAttribute('data-row'));
-        const colValue = parseInt(cell.getAttribute('data-col'));
-
-        if (rowValue === 2 && colValue === 2) {
-          cell.addEventListener('click', () => {
-            if (!cell.classList.contains('clicked')) {
-              console.log('Correct click! You won!');
-              showStar(2, 2);
-              cell.classList.add('clicked');
-              setTimeout(() => {
-                localStorage.setItem('level', String(level + 1));
-                initializeGame(level + 1);
-              }, 1000);
-
-              score += 2;
-              loadGui(score, remainingLives);
-
-            }
-          });
-        }
-
-
-        // else {
-        //   score -= 1;
-        //   remainingLives -= 1;
-        //   loadGui(score, remainingLives);
-        //   if (remainingLives < 0) {
-        //     console.log(`Game over!`);
-        //     addDialogWindow();
-        //     return;
-        //   }
-        //   showGhost(e.target);
-        // }
-      });
-
-      break;
-
-    case 5:
-      gridCells[8].appendChild(pacmanImg);
-      playTaskAudio(5);
-
-      gridCells.forEach(cell => {
-        const rowValue = parseInt(cell.getAttribute('data-row'));
-        const colValue = parseInt(cell.getAttribute('data-col'));
-
-        if (rowValue === 0 && colValue === 0) {
-          cell.addEventListener('click', () => {
-            if (!cell.classList.contains('clicked')) {
-              console.log('Correct click! You won!');
-              showStar(0, 0);
-              cell.classList.add('clicked');
-              setTimeout(() => {
-                gridCells[0].appendChild(pacmanImg);
-              }, 1000);
-
-              score += 2;
-              loadGui(score, remainingLives);
-              localStorage.setItem('lesson3', 'passed');
-
-            }
-          });
-        }
-
-
-        // else {
-        //   score -= 1;
-        //   remainingLives -= 1;
-        //   loadGui(score, remainingLives);
-        //   if (remainingLives < 0) {
-        //     console.log(`Game over!`);
-        //     addDialogWindow();
-        //     return;
-        //   }
-        //   showGhost(e.target);
-        // }
-      });
-
-      break;
-
-    default:
-      console.log(`Check the initializeGame func`);
+              showGhost(e.target);
+              if (remainingLives < 0) {
+                console.log(`Game over!`);
+                addDialogWindow();
+                return;
+              }
+            })
+          }
+        });
+  
+        break;
+  
+      default:
+        console.log(`Check the initializeGame func`);
+    }
+  } catch (err) {
+    console.log(`Your error is:`, err);
   }
+
 }
 
 function showStar(row, col) {
