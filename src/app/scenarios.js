@@ -49,9 +49,9 @@ async function playTask1() {
 };
 
 async function playTask2() {
-    rightAudio.play().then(setTimeout(() => { rightAudio.play() }, 2000))
-        .then(setTimeout(() => { upAudio.play() }, 3000))
-        .then(setTimeout(() => { click.play() }, 4000))
+    rightAudio.play().then(setTimeout(() => { rightAudio.play() }, 1800))
+        .then(setTimeout(() => { upAudio.play() }, 2500))
+        .then(setTimeout(() => { click.play() }, 3500))
 };
 
 async function playTask3() {
