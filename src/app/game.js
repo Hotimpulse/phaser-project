@@ -3,17 +3,15 @@ import upSound from '../assets/sounds/up.mp3';
 import leftSound from '../assets/sounds/left.mp3';
 import rightSound from '../assets/sounds/right.mp3';
 import downSound from '../assets/sounds/down.mp3';
-import { playTaskAudio } from "./scenarios";
+import { playTaskAudio, correctAudio1, correctAudio2, endGameAudio, wrongChoiceAudio, tryAgainAudio, tryNextTimeAudio } from "./scenarios";
 import { init } from './phaser';
-import tryAgainSound from '../assets/sounds/try_again.mp3';
+import tryNextTime from '../assets/sounds/try_next_time.mp3';
 
-
-localStorage.setItem('level', `1`);
-let level = Number(localStorage.getItem('level'));
 export let createGameDiv = () => {
+  localStorage.setItem('level', `1`);
   // let gameArea = document.getElementById("game");
   // init(gameArea);
-  initializeGame(Number(level));
+  initializeGame();
 }
 
 //gui
@@ -52,8 +50,6 @@ pacmanImg.src = './assets/imgs/pacman_left.png';
 pacmanImg.alt = 'pacman hero icon';
 pacmanImg.style.width = `2rem`;
 
-
-
 function addDialogWindow() {
 
   let dialogWindow = document.createElement('dialog');
@@ -67,7 +63,7 @@ function addDialogWindow() {
     dialogWindow.style.visibility = 'visible';
     dialogWindow.textContent = `Тотальный провал! Так держать!`;
     dialogWindow.appendChild(closeDialogBtn);
-    
+
     closeDialogBtn.addEventListener('click', () => {
       dialogWindow.close();
       document.body.removeChild(dialogWindow);
@@ -79,7 +75,7 @@ function addDialogWindow() {
     dialogWindow.style.visibility = 'visible';
     dialogWindow.textContent = `Здорово! Так держать!`;
     dialogWindow.appendChild(closeDialogBtn);
-    
+
     closeDialogBtn.addEventListener('click', () => {
       dialogWindow.close();
       document.body.removeChild(dialogWindow);
@@ -91,220 +87,115 @@ function addDialogWindow() {
 
 loadGui(score = 0, remainingLives = 3);
 
+function playGame(row, col) {
 
-function initializeGame(level) {
-  try {
-    function increaseLevel() {
-      setTimeout(() => {
-        localStorage.setItem('level', String(level + 1));
-        initializeGame(level + 1);
-      }, 1000);
+  let targetCellIndex = row * 3 + col;
+  let hasWon = false;
+
+  function winClick() {
+    let level = Number(localStorage.getItem('level'));
+    if (!hasWon) {
+      hasWon = true;
+      showStar(row, col);
+      increaseLevel();
+      score += 2;
+      loadGui(score, remainingLives);
+      if (level === 5) {
+        localStorage.setItem('lesson3', 'passed');
+        setTimeout(() => {
+          gridCells[0].appendChild(pacmanImg);
+        }, 700);
+        setTimeout(() => {
+          addDialogWindow();
+        }, 1200);
+      }
     }
-  
+  }
+
+  function loseClick() {
+    if (!hasWon) {
+      score -= 1;
+      remainingLives -= 1;
+      loadGui(score, remainingLives);
+      showGhost(this);
+      tryAgainAudio.play();
+      if (remainingLives < 0) {
+        console.log(`Game over!`);
+        setTimeout(() => {
+          tryNextTimeAudio.play();
+        }, 1500);
+        addDialogWindow();
+      }
+    }
+  }
+
+  for (let i = 0; i < gridCells.length; i++) {
+    if (i === targetCellIndex) {
+      gridCells[i].addEventListener('click', winClick);
+    } else {
+      gridCells[i].addEventListener('click', loseClick);
+    }
+  }
+}
+
+
+function increaseLevel() {
+  let level = Number(localStorage.getItem('level'));
+  setTimeout(() => {
+    localStorage.setItem('level', String(level + 1));
+    let newLevel = Number(localStorage.getItem('level'));
+
+    initializeGame(newLevel);
+  }, 1000);
+}
+
+function initializeGame() {
+  try {
     let currentLevel = Number(localStorage.getItem('level'));
-  
+
     switch (currentLevel) {
-  
+
       case 1:
         gridCells[7].appendChild(pacmanImg);
         playTaskAudio(1);
-  
-        gridCells.forEach(cell => {
-          const rowValue = parseInt(cell.getAttribute('data-row'));
-          const colValue = parseInt(cell.getAttribute('data-col'));
-  
-          if (rowValue === 1 && colValue === 0) {
-            cell.addEventListener('click', () => {
-              if (!cell.classList.contains('clicked')) {
-                console.log('Correct click! You won!');
-                showStar(1, 0);
-                cell.classList.add('clicked');
-                increaseLevel();
-  
-                score += 2;
-                loadGui(score, remainingLives);
-              }
-            });
-          }
-        });
-        // else {
-        //       score -= 1;
-        //       remainingLives -= 1;
-        //       loadGui(score, remainingLives);
-        //       if (remainingLives < 0) {
-        //         console.log(`Game over!`);
-        //         addDialogWindow();
-        //         return;
-        //       }
-        //       showGhost(e.target);
-        //     }
-        // });
+        playGame(1, 0);
+
         break;
-  
+
       case 2:
         gridCells[3].appendChild(pacmanImg);
         playTaskAudio(2);
-        
-        gridCells.forEach(cell => {
-          const rowValue = parseInt(cell.getAttribute('data-row'));
-          const colValue = parseInt(cell.getAttribute('data-col'));
-  
-          if (rowValue === 0 && colValue === 2) {
-            cell.addEventListener('click', () => {
-              if (!cell.classList.contains('clicked')) {
-                console.log('Correct click! You won!');
-                showStar(0, 2);
-                cell.classList.add('clicked');
-                increaseLevel();
-  
-                score += 2;
-                loadGui(score, remainingLives);
-              }
-            });
-          }
-          //  else {
-          //       score -= 1;
-          //       remainingLives -= 1;
-          //       loadGui(score, remainingLives);
-          //       if (remainingLives < 0) {
-          //         console.log(`Game over!`);
-          //         addDialogWindow();
-          //         return;
-          //       }
-          //       showGhost(e.target);
-          //     }
-        });
-  
+        playGame(0, 2);
+
         break;
-  
+
       case 3:
         gridCells[2].appendChild(pacmanImg);
         playTaskAudio(3);
-  
-        gridCells.forEach(cell => {
-          const rowValue = parseInt(cell.getAttribute('data-row'));
-          const colValue = parseInt(cell.getAttribute('data-col'));
-  
-          if (rowValue === 0 && colValue === 1) {
-            cell.addEventListener('click', () => {
-              if (!cell.classList.contains('clicked')) {
-                console.log('Correct click! You won!');
-                showStar(0, 1);
-                cell.classList.add('clicked');
-                increaseLevel();
-  
-                score += 2;
-                loadGui(score, remainingLives);
-              }
-            });
-          }
-  
-  
-          // else {
-          //   score -= 1;
-          //   remainingLives -= 1;
-          //   loadGui(score, remainingLives);
-          //   if (remainingLives < 0) {
-          //     console.log(`Game over!`);
-          //     addDialogWindow();
-          //     return;
-          //   }
-          //   showGhost(e.target);
-          // }
-        });
-  
+
+        playGame(0, 1);
+
         break;
-  
+
       case 4:
         gridCells[1].appendChild(pacmanImg);
         playTaskAudio(4);
-  
-        gridCells.forEach(cell => {
-          const rowValue = parseInt(cell.getAttribute('data-row'));
-          const colValue = parseInt(cell.getAttribute('data-col'));
-  
-          if (rowValue === 2 && colValue === 2) {
-            cell.addEventListener('click', () => {
-              if (!cell.classList.contains('clicked')) {
-                console.log('Correct click! You won!');
-                showStar(2, 2);
-                cell.classList.add('clicked');
-                increaseLevel();
-  
-                score += 2;
-                loadGui(score, remainingLives);
-  
-              }
-            });
-          }
-  
-  
-          // else {
-          //   score -= 1;
-          //   remainingLives -= 1;
-          //   loadGui(score, remainingLives);
-          //   if (remainingLives < 0) {
-          //     console.log(`Game over!`);
-          //     addDialogWindow();
-          //     return;
-          //   }
-          //   showGhost(e.target);
-          // }
-        });
-  
+        playGame(2, 2);
+
         break;
-  
+
       case 5:
         gridCells[8].appendChild(pacmanImg);
         playTaskAudio(5);
-  
-        gridCells.forEach(cell => {
-          const rowValue = parseInt(cell.getAttribute('data-row'));
-          const colValue = parseInt(cell.getAttribute('data-col'));
-  
-          if (rowValue === 0 && colValue === 0) {
-            cell.addEventListener('click', () => {
-              if (!cell.classList.contains('clicked')) {
-                console.log('Correct click! You won!');
-                showStar(0, 0);
-                cell.classList.add('clicked');
-                setTimeout(() => {
-                  gridCells[0].appendChild(pacmanImg);
-                }, 1000);
-  
-                score += 2;
-                loadGui(score, remainingLives);
-                localStorage.setItem('lesson3', 'passed');
-                let check = localStorage.getItem('lesson3');
-                if (check === 'passed') {
-                  addDialogWindow();
-                }
-              }
-            });
-          } else {
-            cell.addEventListener('click', () => {
-              score -= 1;
-              remainingLives -= 1;
-              loadGui(score, remainingLives);
-              showGhost(e.target);
-              if (remainingLives < 0) {
-                console.log(`Game over!`);
-                addDialogWindow();
-                return;
-              }
-            })
-          }
-        });
-  
+        playGame(0, 0);
         break;
-  
+
       default:
         console.log(`Check the initializeGame func`);
     }
   } catch (err) {
     console.log(`Your error is:`, err);
   }
-
 }
 
 function showStar(row, col) {
@@ -329,11 +220,9 @@ function showGhost(cell) {
     redGhost.style.transition = 'transform 0.2s, visibility 0.2s';
     redGhost.style.transform = 'scale(10)';
     redGhost.style.visibility = 'hidden';
-    let tryAgainAudio = new Audio(tryAgainSound);
-    tryAgainAudio.play();
     setTimeout(() => {
       blinkPacman(pacmanImg);
-    }, 10);
+    }, 100);
   }, 500);
 }
 

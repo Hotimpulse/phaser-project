@@ -11,7 +11,7 @@ import mainTaskSound from '../assets/sounds/game3_maintask.mp3';
 import mainTaskSound2 from '../assets/sounds/game3_maintask1.mp3';
 import mainTaskSound3 from '../assets/sounds/game3_maintask2.mp3';
 
-import tryAgainSound from '../assets/sounds/try_again.mp3';
+import try_again from '../assets/sounds/try_again.mp3';
 import tryNextTime from '../assets/sounds/try_next_time.mp3';
 import wrongChoiceSound from '../assets/sounds/wrong_choice.mp3';
 
@@ -20,6 +20,13 @@ let rightAudio = new Audio(rightSound);
 let downAudio = new Audio(downSound);
 let upAudio = new Audio(upSound);
 let click = new Audio(clickSound);
+
+export let correctAudio1 = new Audio(correctSound);
+export let correctAudio2 = new Audio(correctSound2);
+export let endGameAudio = new Audio(endGameSound);
+export let wrongChoiceAudio = new Audio(wrongChoiceSound);
+export let tryAgainAudio = new Audio(try_again);
+export let tryNextTimeAudio = new Audio(tryNextTime);
 
 export function playTaskAudio(task) {
     switch (task) {
