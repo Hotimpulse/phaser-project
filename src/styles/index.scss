@@ -12,6 +12,10 @@ body {
 
 #main-wrapper {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
 }
 
 #game {
@@ -20,7 +24,8 @@ body {
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  width: 50rem;
+  margin-top: 10rem;
+
 }
 
 #button-run {
@@ -44,62 +49,44 @@ body {
   }
 }
 
-#name-card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: min(100% - 0rem, 25rem);
-  height: 12.49744rem;
-  background-color: white;
-  border-radius: 1rem;
-  position: absolute;
-  top: 7rem;
-  left: 22.5rem;
+// #card-wrapper {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   position: absolute;
+//   top: 22rem;
+//   left: 22.5rem;
+// }
 
-  //   box-shadow: 0px 0px 15px 2px black;
-  & > * {
-    width: 7.52175rem;
-    height: 7.52175rem;
-    cursor: pointer;
-    margin: 2.5rem;
-  }
-}
+// #name-card {
+//   background-color: white;
+//   border-radius: 1rem;
+//   box-shadow: 0px 0px 15px 2px rgb(252, 55, 55);
+//   & > * {
+//     width: 7.52175rem;
+//     height: 7.52175rem;
+//     cursor: pointer;
+//     margin: 2.5rem;
+//   }
+// }
 
-#rect_points {
-  display: flex;
-  width: min(100% - 0rem, 25rem);
-  height: 14.09738rem;
-  background-color: white;
-  border-radius: 1rem;
-  position: absolute;
-  top: 22rem;
-  left: 22.5rem;
-  //   box-shadow: 0px 0px 15px 2px black;
-}
+// #rect_points {
+//   background-color: white;
+//   border-radius: 1rem;
+//   box-shadow: 0px 0px 15px 2px black;
+// }
 
-#rect_small {
-  display: flex;
-  width: min(100% - 0rem, 25rem);
-  height: 6.53363rem;
-  background-color: white;
-  border-radius: 1rem;
-  position: absolute;
-  top: 39rem;
-  left: 22.5rem;
-  //   box-shadow: 0px 0px 15px 2px black;
-}
+// #rect_small {
+//   background-color: white;
+//   border-radius: 1rem;
+//   box-shadow: 0px 0px 15px 2px black;
+// }
 
-#rect_small2 {
-  display: flex;
-  width: min(100% - 0rem, 25rem);
-  height: 6.53363rem;
-  background-color: white;
-  border-radius: 1rem;
-  position: absolute;
-  top: 48rem;
-  left: 22.5rem;
-  //   box-shadow: 0px 0px 15px 2px black;
-}
+// #rect_small2 {
+//   background-color: white;
+//   border-radius: 1rem;
+//   box-shadow: 0px 0px 15px 2px black;
+// }
 
 // game styling
 
@@ -117,6 +104,8 @@ body {
   justify-content: center;
   align-items: center;
   font-size: 24px;
+  background-color: rgba($color: #352dad, $alpha: 0.55);
+  // opacity: 0.15;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
   &:hover {
@@ -134,17 +123,41 @@ body {
 
 #score-count {
   display: flex;
-  width: 300px;
-  border: 1px solid black;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
 }
 
 #lives-count {
   display: flex;
-  width: 300px;
-  border: 1px solid black;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
 }
 
-// ui 
+// ui
+
+button {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: none;
+  width: 8rem;
+  height: 3rem;
+
+  border-radius: 0.3rem;
+  background-color: teal;
+  color: white;
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+  &:hover {
+    background-color: orange;
+    color: black;
+  }
+}
 
 #dialog-loss {
   display: flex;
@@ -186,7 +199,7 @@ body {
   display: flex;
   height: 2rem;
   width: 2rem;
-} 
+}
 
 // animations
 

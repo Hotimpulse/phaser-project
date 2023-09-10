@@ -15,21 +15,23 @@ import tryAgainSound from '../assets/sounds/try_again.mp3';
 import tryNextTime from '../assets/sounds/try_next_time.mp3';
 import wrongChoiceSound from '../assets/sounds/wrong_choice.mp3';
 
+export function playMainTaskAudio() {
+    task2Sound.play().then(setTimeout(() => {
+        task3Sound.play();
+    }, 3000)).then(setTimeout(() => {
+        task1Sound.play();
+    }, 8000))
+}
+
+let task1Sound = new Audio(mainTaskSound);
+let task2Sound = new Audio(mainTaskSound2);
+let task3Sound = new Audio(mainTaskSound3);
 
     let btn = document.getElementById('btn1');
-    btn.addEventListener('click', () => {
-        const playMainTaskAudio = async () => {
-            task2Sound.play().then(setTimeout(() => {
-                task3Sound.play();
-            }, 3000)).then(setTimeout(() => {
-                task1Sound.play();
-            }, 8000))
-        }
-        let task1Sound = new Audio(mainTaskSound);
-        let task2Sound = new Audio(mainTaskSound2);
-        let task3Sound = new Audio(mainTaskSound3);
-        playMainTaskAudio();
-    })
+    // btn.addEventListener('click', () => {
+        
+    //     playMainTaskAudio();
+    // })
     // document.addEventListener('DOMContentLoaded', () => {
     //     const playMainTaskAudio = async () => {
     //         task2Sound.play().then(setTimeout(() => {
