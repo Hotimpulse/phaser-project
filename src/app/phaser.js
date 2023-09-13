@@ -36,7 +36,7 @@ export function init(targetDiv) {
     game.scene.start('Game3');
     
     let gameOver = false;
-    let text1, text2, profileName;
+    let text1, text2, profileName, liveText, scoreText;
     
     function preload() {
         this.load.image('layer1', './assets/imgs/bg_layer1.png');
@@ -59,7 +59,6 @@ export function init(targetDiv) {
     }
 
     function create() {
-
         
         const gameDiv = document.querySelector('#game');
 
@@ -91,14 +90,14 @@ export function init(targetDiv) {
         profileName = this.add.text(250, 100, `${profileName}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: 'black' });
         text1 = this.add.text(650, 50, `Угадай слова нажимая`, { fontFamily: 'Arial', fontSize: '3.375rem', fill: '#B7C4DD' });
         text2 = this.add.text(650, 135, `Угадай слова нажимая на клеточки с нужными слогами. Инструкции: задание к игре`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#B7C4DD' });
-    }
-
-    function update() {
+      
+        
+      }
+      
+      function update() {
         if (gameOver) {
-            return;
+          return;
         }
+        
+      }
     }
-
-
-
-}

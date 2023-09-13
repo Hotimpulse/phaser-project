@@ -1,4 +1,3 @@
-// import init from "./phaser";
 import upSound from '../assets/sounds/up.mp3';
 import leftSound from '../assets/sounds/left.mp3';
 import rightSound from '../assets/sounds/right.mp3';
@@ -243,14 +242,4 @@ export function pacmanGameRun() {
       pacmanImg.style.visibility = 'visible';
     }, 1000);
   }
-
-  // const config = {
-  //   type: Phaser.AUTO,
-  //   parent: 'phaser-example',
-  //   width: 800,
-  //   height: 600,
-  // };
-  // const game = new Phaser.Game(config);
-
-  // return game;
 }
