@@ -15,15 +15,39 @@ export class Game3 extends Scene {
     this.load.svg('card', './assets/SVG/tabler_square-filled.svg', { width: 264, height: 264 });
     this.load.spritesheet('pacman_left', './assets/imgs/pacman_left.png', { frameWidth: 107, frameHeight: 112 });
     this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
+    this.load.image('red_ghost', './assets/imgs/red_ghost.png');
   }
 
+  createGrid(rows, cols, startX, startY, cellWidth, cellHeight) {
+    const grid = [];
+    for (let row = 0; row < rows; row++) {
+      grid[row] = [];
+      for (let col = 0; col < cols; col++) {
+        const cell = this.add.image(
+          startX + col * cellWidth,
+          startY + row * cellHeight,
+          'card'
+        ).setOrigin(0, 0);
+
+        cell.row = row;
+        cell.col = col;
+
+        grid[row][col] = cell;
+      }
+    }
+    return grid;
+  }
+
+
   create() {
+    const scene = this;
+    let hasWon;
     let remainingLives = localStorage.setItem('remainingLives', '3');
     let score = localStorage.setItem('score', '0');
-    let liveText;
-    let scoreText;
-    liveText = this.add.text(120, 350, `Жизни: ${localStorage.getItem('remainingLives')}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#black' });
-    scoreText = this.add.text(120, 390, `Очки: ${localStorage.getItem('score')}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#black' });
+    // let liveText = 3;
+    // let scoreText = 0;
+    let liveText = this.add.text(120, 350, `Жизни: ${localStorage.getItem('remainingLives')}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#black' });
+    let scoreText = this.add.text(120, 390, `Очки: ${localStorage.getItem('score')}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#black' });
     const startX = 800;
     const startY = 220;
     const cellWidth = 264;
@@ -80,12 +104,15 @@ export class Game3 extends Scene {
 
 
     function updateLiveText() {
-      liveText.text = `Жизни: ${localStorage.getItem('remainingLives')}`;
+      let livesNumber = Number(localStorage.getItem('remainingLives'));
+      liveText.text = `Жизни: ${livesNumber}`;
     }
 
     function updateScoreText() {
-      scoreText.text = `Очки: ${localStorage.getItem('score')}`;
+      let scoreNumber = Number(localStorage.getItem('score'));
+      scoreText.text = `Очки: ${scoreNumber}`;
     }
+
     function increaseLevel() {
       let level = Number(localStorage.getItem('level'));
       setTimeout(() => {
@@ -93,52 +120,46 @@ export class Game3 extends Scene {
         let newLevel = Number(localStorage.getItem('level'));
 
         initializeGame(newLevel);
+        hasWon = false;
       }, 1000);
     }
+
+    const loadLevel = {
+      1: () => {
+        playTaskAudio(1);
+        playGame(1, 0);
+      },
+      2: () => {
+        playTaskAudio(2);
+        playGame(0, 2);
+      },
+      3: () => {
+        playTaskAudio(3);
+        playGame(0, 1);
+      },
+      4: () => {
+        playTaskAudio(4);
+        playGame(2, 2);
+      },
+      5: () => {
+        playTaskAudio(5);
+        playGame(0, 0);
+      },
+      default: () => {
+        console.log(`Check the init func`);
+      },
+    };
 
     function initializeGame() {
       try {
         let currentLevel = Number(localStorage.getItem('level'));
+        (loadLevel[currentLevel] || loadLevel.default)();
 
-        switch (currentLevel) {
-
-          case 1:
-            playTaskAudio(1);
-            playGame(1, 0);
-
-            break;
-
-          case 2:
-            playTaskAudio(2);
-            playGame(0, 2);
-
-            break;
-
-          case 3:
-            playTaskAudio(3);
-
-            playGame(0, 1);
-
-            break;
-
-          case 4:
-            playTaskAudio(4);
-            playGame(2, 2);
-
-            break;
-
-          case 5:
-            playTaskAudio(5);
-            playGame(0, 0);
-            break;
-
-          default:
-            console.log(`Check the initializeGame func`);
-        }
       } catch (err) {
         console.log(`Your error is:`, err);
       }
     }
+    initializeGame();
     function showStar(x, y) {
       // Place the star image at the specified position and play the animation
       star.setPosition(x, y);
@@ -148,6 +169,44 @@ export class Game3 extends Scene {
       // star.play('star-animation'); // Start the animation
     }
 
+    // showing the ghost
+
+    function showGhost(scene, cell) {
+      const redGhost = scene.add.sprite(cell.x, cell.y, 'red_ghost').setOrigin(0, 0);
+
+      scene.tweens.add({
+        targets: redGhost,
+        scaleX: 10,
+        scaleY: 10,
+        alpha: 0,
+        duration: 200,
+        ease: 'Linear',
+        onComplete: () => {
+          redGhost.setVisible(false);
+
+          // Blinking pacman logic
+          blinkPacman(pacman);
+        }
+      });
+    }
+
+    function blinkPacman(pacman) {
+      let isHidden = false;
+      const blinkInterval = setInterval(() => {
+        if (isHidden) {
+          pacman.setVisible(true);
+        } else {
+          pacman.setVisible(false);
+        }
+        isHidden = !isHidden;
+      }, 100);
+
+      setTimeout(() => {
+        clearInterval(blinkInterval);
+        pacman.setVisible(true);
+      }, 1000);
+    }
+
     // Creating the star animation
     this.anims.create({
       key: 'star-animation',
@@ -155,38 +214,105 @@ export class Game3 extends Scene {
       frameRate: 10,
       hideOnComplete: true,
     });
+
     // Implementing logic to check if the clicked cell is correct
-    // function checkIfCorrect(row, col) {
-    //   let targetCellIndex = row * 3 + col;
-    //   let hasWon = false;
+    function attachClickEventsToCells(grid, targetCellIndex) {
+      let pacmanCellIndex;
+      let hasWon = false;
 
-    // }
-  }
+      grid.forEach((rowArray, rowIndex) => {
+        rowArray.forEach((cell, colIndex) => {
+          cell.setInteractive();
+          cell.on('pointerdown', () => {
+            let level = Number(localStorage.getItem('level'));
 
+            if (!hasWon) {
+              // clicking the correct cell
+              if (colIndex + 3 * rowIndex === targetCellIndex) {
+                hasWon = true;
+                showStar(cell.x, cell.y);
+                increaseLevel();
+                score += 2;
+                localStorage.setItem('score', score.toString());
+                updateScoreText();
 
-  createGrid(rows, cols, startX, startY, cellWidth, cellHeight) {
-    const grid = [];
-    for (let row = 0; row < rows; row++) {
-      grid[row] = [];
-      for (let col = 0; col < cols; col++) {
-        const cell = this.add.image(
-          startX + col * cellWidth,
-          startY + row * cellHeight,
-          'card'
-        ).setOrigin(0, 0);
+                if (level === 5) {
+                  localStorage.setItem('lesson3', 'passed');
+                  setTimeout(() => {
+                    addDialogWindow();
+                  }, 700);
+                }
+              } else if (colIndex + 3 * rowIndex !== pacmanCellIndex) {
+                // clicking on the wrong cell
+                score -= 1;
+                localStorage.setItem('score', score.toString());
+                updateScoreText();
 
-        cell.row = row;
-        cell.col = col;
+                remainingLives -= 1;
+                localStorage.setItem('remainingLives', remainingLives.toString());
+                updateLiveText();
 
-        grid[row][col] = cell;
+                showGhost(scene, cell);
+                tryAgainAudio.play();
+
+                if (remainingLives < 0) {
+                  console.log(`Game over!`);
+                  setTimeout(() => {
+                    tryNextTimeAudio.play();
+                  }, 1500);
+                  addDialogWindow();
+                }
+              }
+            };
+          });
+
+          if (cell.row === 2 && cell.col === 2) {
+            pacmanCellIndex = colIndex + 3 * rowIndex;
+          }
+        });
+      });
+    }
+
+    function playGame(row, col) {
+      let targetCellIndex = row * 3 + col;
+
+      attachClickEventsToCells(grid, targetCellIndex, row, col);
+    }
+
+    function addDialogWindow() {
+
+      let dialogWindow = document.createElement('dialog');
+      dialogWindow.setAttribute('id', 'dialog-loss');
+      document.body.appendChild(dialogWindow);
+      let closeDialogBtn = document.createElement('button');
+      closeDialogBtn.innerText = `Закрыть`;
+
+      if (localStorage.getItem('lesson3') === 'failed') {
+        dialogWindow.showModal();
+        dialogWindow.style.visibility = 'visible';
+        dialogWindow.textContent = `Тотальный провал! Так держать!`;
+        dialogWindow.appendChild(closeDialogBtn);
+
+        closeDialogBtn.addEventListener('click', () => {
+          dialogWindow.close();
+          document.body.removeChild(dialogWindow);
+          window.location.reload();
+          localStorage.clear();
+        });
+      } else {
+        dialogWindow.showModal();
+        dialogWindow.style.visibility = 'visible';
+        dialogWindow.textContent = `Здорово! Так держать!`;
+        dialogWindow.appendChild(closeDialogBtn);
+
+        closeDialogBtn.addEventListener('click', () => {
+          dialogWindow.close();
+          document.body.removeChild(dialogWindow);
+          window.location.reload();
+          localStorage.clear();
+        });
       }
     }
-    return grid;
-  }
-
-
-  update() {
-
 
   }
 }

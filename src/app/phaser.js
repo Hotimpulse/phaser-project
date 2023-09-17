@@ -86,8 +86,8 @@ export function init(targetDiv) {
         });
 
         //  The text
-        profileName = `Lev`
-        profileName = this.add.text(250, 100, `${profileName}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: 'black' });
+        profileName = `User`;
+        this.add.text(250, 100, `${profileName}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: 'black' });
         text1 = this.add.text(650, 50, `Угадай слова нажимая`, { fontFamily: 'Arial', fontSize: '3.375rem', fill: '#B7C4DD' });
         text2 = this.add.text(650, 135, `Угадай слова нажимая на клеточки с нужными слогами. Инструкции: задание к игре`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#B7C4DD' });
       
