@@ -12,6 +12,19 @@ export class Game3 extends Scene {
   }
 
   preload() {
+    this.load.svg('startButton', './assets/SVG/close.svg');
+    this.load.image('layer1', './assets/imgs/bg_layer1.png');
+    this.load.image('layer2', './assets/imgs/bg_layer2.png');
+
+    this.load.svg('sound_icon', './assets/SVG/sound_icon.svg');
+    this.load.svg('close_icon', './assets/SVG/close.svg');
+    this.load.svg('profile_icon', './assets/SVG/profile_icon.svg');
+
+    this.load.svg('rect_name', './assets/SVG/rect_name.svg');
+    this.load.svg('rect_points', './assets/SVG/rect_points.svg');
+    this.load.svg('rect_small', './assets/SVG/rect_small.svg');
+    this.load.image('main-rect', './assets/imgs/rectangle-main.png');
+
     this.load.svg('card', './assets/SVG/tabler_square-filled.svg', { width: 264, height: 264 });
     this.load.spritesheet('pacman_left', './assets/imgs/pacman_left.png', { frameWidth: 107, frameHeight: 112 });
     this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
@@ -38,16 +51,45 @@ export class Game3 extends Scene {
     return grid;
   }
 
-
   create() {
     const scene = this;
+    let text1, text2, profileName;
+    let gameOver = false;
+    this.add.image(1920 / 2, 1080 / 2, 'layer1');
+    this.add.image(1920 / 2, 1080 / 2, 'layer2');
+    this.add.image(240, 140, 'rect_name');
+    this.add.image(240, 380, 'rect_points');
+    this.add.image(240, 570, 'rect_small');
+    this.add.image(240, 700, 'rect_small');
+    this.add.image(150, 140, 'profile_icon');
+    this.add.sprite(1180, 540, 'main-rect');
+    // sound button behavior
+    const soundIcon = this.add.sprite(660, 145, 'sound_icon');
+    soundIcon.setInteractive();
+    soundIcon.on('pointerdown', async () => {
+        playMainTaskAudio();
+    });
+    // x button behavior
+    const closeIcon = this.add.sprite(1820, 105, 'close_icon');
+    closeIcon.setInteractive();
+    closeIcon.on("pointerdown", () => {
+        window.close();
+    });
+
+    //  The text
+    profileName = `User`;
+    this.add.text(250, 100, `${profileName}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: 'black' });
+    text1 = this.add.text(650, 50, `Угадай слова нажимая`, { fontFamily: 'Arial', fontSize: '3.375rem', fill: '#B7C4DD' });
+    text2 = this.add.text(650, 135, `Угадай слова нажимая на клеточки с нужными слогами. Инструкции: задание к игре`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#B7C4DD' });
     let hasWon;
-    let remainingLives = localStorage.setItem('remainingLives', '3');
-    let score = localStorage.setItem('score', '0');
-    // let liveText = 3;
-    // let scoreText = 0;
+    localStorage.setItem('remainingLives', 3);
+    localStorage.setItem('score', 0);
+    let remainingLives = Number(localStorage.getItem('remainingLives'));
+    let score = Number(localStorage.getItem('score'));
+
     let liveText = this.add.text(120, 350, `Жизни: ${localStorage.getItem('remainingLives')}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#black' });
     let scoreText = this.add.text(120, 390, `Очки: ${localStorage.getItem('score')}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#black' });
+
     const startX = 800;
     const startY = 220;
     const cellWidth = 264;
@@ -68,49 +110,15 @@ export class Game3 extends Scene {
       { row: 0, col: 0 }
     ];
 
-    grid.forEach(row => {
-      row.forEach(cell => {
-        cell.setInteractive();
-        cell.on('pointerdown', () => {
-          const row = cell.row;
-          const col = cell.col;
-
-          const currentLevel = Number(localStorage.getItem('level'));
-
-          const correctData = levelData[currentLevel - 1];
-
-          if (correctData && row === correctData.row && col === correctData.col) {
-            showStar(cell.x, cell.y);
-            increaseLevel();
-            score += 2;
-            localStorage.setItem('score', score.toString());
-            updateScoreText();
-          } else {
-            score -= 1;
-            localStorage.setItem('score', score.toString());
-            updateScoreText();
-            remainingLives -= 1;
-            localStorage.setItem('remainingLives', remainingLives.toString());
-            updateLiveText();
-          }
-
-          const topLeftX = startX + col * cellWidth + cellWidth / 3.5;
-          const topLeftY = startY + row * cellHeight + cellHeight / 3.5;
-
-          pacman.setPosition(topLeftX, topLeftY);
-        });
-      });
-    });
-
 
     function updateLiveText() {
       let livesNumber = Number(localStorage.getItem('remainingLives'));
-      liveText.text = `Жизни: ${livesNumber}`;
+      liveText.setText(`Жизни: ${livesNumber}`);
     }
 
     function updateScoreText() {
       let scoreNumber = Number(localStorage.getItem('score'));
-      scoreText.text = `Очки: ${scoreNumber}`;
+      scoreText.setText(`Очки: ${scoreNumber}`);
     }
 
     function increaseLevel() {
@@ -160,6 +168,7 @@ export class Game3 extends Scene {
       }
     }
     initializeGame();
+
     function showStar(x, y) {
       // Place the star image at the specified position and play the animation
       star.setPosition(x, y);
@@ -215,60 +224,101 @@ export class Game3 extends Scene {
       hideOnComplete: true,
     });
 
-    // Implementing logic to check if the clicked cell is correct
-    function attachClickEventsToCells(grid, targetCellIndex) {
-      let pacmanCellIndex;
-      let hasWon = false;
 
-      grid.forEach((rowArray, rowIndex) => {
-        rowArray.forEach((cell, colIndex) => {
+    function onCellClick(cell) {
+
+      if (!cell.isClicked) {
+        cell.isClicked = true;
+        const row = cell.row;
+        const col = cell.col;
+
+        const currentLevel = Number(localStorage.getItem('level'));
+        const correctData = levelData[currentLevel - 1];
+
+        if (correctData && row === correctData.row && col === correctData.col) {
+          showStar(cell.x, cell.y);
+          increaseLevel();
+          score += 2;
+          localStorage.setItem('score', score.toString());
+          updateScoreText();
+        } else {
+          score -= 1;
+          localStorage.setItem('score', score.toString());
+          updateScoreText();
+          remainingLives -= 1;
+          localStorage.setItem('remainingLives', remainingLives.toString());
+          updateLiveText();
+          showGhost(scene, cell);
+          tryAgainAudio.play();
+
+          if (remainingLives < 0) {
+            console.log(`Game over!`);
+            localStorage.setItem('lesson3', 'failed');
+            setTimeout(() => {
+              tryNextTimeAudio.play();
+            }, 1500);
+            addDialogWindow();
+          }
+        }
+
+        const topLeftX = startX + col * cellWidth + cellWidth / 3.5;
+        const topLeftY = startY + row * cellHeight + cellHeight / 3.5;
+        pacman.setPosition(topLeftX, topLeftY);
+
+        function addDialogWindow() {
+
+          let dialogWindow = document.createElement('dialog');
+          dialogWindow.setAttribute('id', 'dialog-loss');
+          document.body.appendChild(dialogWindow);
+          let closeDialogBtn = document.createElement('button');
+          closeDialogBtn.innerText = `Закрыть`;
+
+          if (localStorage.getItem('lesson3') === 'failed') {
+            dialogWindow.showModal();
+            dialogWindow.style.visibility = 'visible';
+            dialogWindow.textContent = `Тотальный провал! Так держать!`;
+            dialogWindow.appendChild(closeDialogBtn);
+
+            closeDialogBtn.addEventListener('click', () => {
+              dialogWindow.close();
+              document.body.removeChild(dialogWindow);
+              window.location.reload();
+              localStorage.clear();
+            });
+          } else {
+            dialogWindow.showModal();
+            dialogWindow.style.visibility = 'visible';
+            dialogWindow.textContent = `Здорово! Так держать!`;
+            dialogWindow.appendChild(closeDialogBtn);
+
+            closeDialogBtn.addEventListener('click', () => {
+              dialogWindow.close();
+              document.body.removeChild(dialogWindow);
+              window.location.reload();
+              localStorage.clear();
+            });
+          }
+        }
+      }
+    }
+
+    grid.forEach(row => {
+      row.forEach(cell => {
+        cell.setInteractive();
+        cell.on('pointerdown', () => {
+          onCellClick(cell);
+        });
+      });
+    });
+
+    function attachClickEventsToCells(grid, targetCellIndex) {
+      grid.forEach(rowArray => {
+        rowArray.forEach(cell => {
+          cell.isClicked = false;
           cell.setInteractive();
           cell.on('pointerdown', () => {
-            let level = Number(localStorage.getItem('level'));
-
-            if (!hasWon) {
-              // clicking the correct cell
-              if (colIndex + 3 * rowIndex === targetCellIndex) {
-                hasWon = true;
-                showStar(cell.x, cell.y);
-                increaseLevel();
-                score += 2;
-                localStorage.setItem('score', score.toString());
-                updateScoreText();
-
-                if (level === 5) {
-                  localStorage.setItem('lesson3', 'passed');
-                  setTimeout(() => {
-                    addDialogWindow();
-                  }, 700);
-                }
-              } else if (colIndex + 3 * rowIndex !== pacmanCellIndex) {
-                // clicking on the wrong cell
-                score -= 1;
-                localStorage.setItem('score', score.toString());
-                updateScoreText();
-
-                remainingLives -= 1;
-                localStorage.setItem('remainingLives', remainingLives.toString());
-                updateLiveText();
-
-                showGhost(scene, cell);
-                tryAgainAudio.play();
-
-                if (remainingLives < 0) {
-                  console.log(`Game over!`);
-                  setTimeout(() => {
-                    tryNextTimeAudio.play();
-                  }, 1500);
-                  addDialogWindow();
-                }
-              }
-            };
+            onCellClick(cell);
           });
-
-          if (cell.row === 2 && cell.col === 2) {
-            pacmanCellIndex = colIndex + 3 * rowIndex;
-          }
         });
       });
     }
@@ -276,43 +326,14 @@ export class Game3 extends Scene {
     function playGame(row, col) {
       let targetCellIndex = row * 3 + col;
 
+      // Resetting the click flags when starting a new level
+      grid.forEach(rowArray => {
+        rowArray.forEach(cell => {
+          cell.isClicked = false;
+        });
+      });
+
       attachClickEventsToCells(grid, targetCellIndex, row, col);
     }
-
-    function addDialogWindow() {
-
-      let dialogWindow = document.createElement('dialog');
-      dialogWindow.setAttribute('id', 'dialog-loss');
-      document.body.appendChild(dialogWindow);
-      let closeDialogBtn = document.createElement('button');
-      closeDialogBtn.innerText = `Закрыть`;
-
-      if (localStorage.getItem('lesson3') === 'failed') {
-        dialogWindow.showModal();
-        dialogWindow.style.visibility = 'visible';
-        dialogWindow.textContent = `Тотальный провал! Так держать!`;
-        dialogWindow.appendChild(closeDialogBtn);
-
-        closeDialogBtn.addEventListener('click', () => {
-          dialogWindow.close();
-          document.body.removeChild(dialogWindow);
-          window.location.reload();
-          localStorage.clear();
-        });
-      } else {
-        dialogWindow.showModal();
-        dialogWindow.style.visibility = 'visible';
-        dialogWindow.textContent = `Здорово! Так держать!`;
-        dialogWindow.appendChild(closeDialogBtn);
-
-        closeDialogBtn.addEventListener('click', () => {
-          dialogWindow.close();
-          document.body.removeChild(dialogWindow);
-          window.location.reload();
-          localStorage.clear();
-        });
-      }
-    }
-
   }
 }
