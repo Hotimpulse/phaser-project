@@ -5,6 +5,7 @@ import rightSound from '../assets/sounds/right.mp3';
 import downSound from '../assets/sounds/down.mp3';
 import { playTaskAudio, correctAudio1, correctAudio2, endGameAudio, wrongChoiceAudio, tryAgainAudio, tryNextTimeAudio } from "./scenarios";
 import tryNextTime from '../assets/sounds/try_next_time.mp3';
+import { playMainTaskAudio } from './soundfile';
 
 export class Game3 extends Scene {
   constructor() {
@@ -53,6 +54,7 @@ export class Game3 extends Scene {
 
   create() {
     const scene = this;
+    let isAudioPlaying = false;
     let text1, text2, profileName;
     let gameOver = false;
     this.add.image(1920 / 2, 1080 / 2, 'layer1');
@@ -67,20 +69,20 @@ export class Game3 extends Scene {
     const soundIcon = this.add.sprite(660, 145, 'sound_icon');
     soundIcon.setInteractive();
     soundIcon.on('pointerdown', async () => {
-        playMainTaskAudio();
+      playMainTaskAudio();
     });
     // x button behavior
     const closeIcon = this.add.sprite(1820, 105, 'close_icon');
     closeIcon.setInteractive();
     closeIcon.on("pointerdown", () => {
-        window.close();
+      window.close();
     });
 
     //  The text
     profileName = `User`;
     this.add.text(250, 100, `${profileName}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: 'black' });
-    text1 = this.add.text(650, 50, `Угадай слова нажимая`, { fontFamily: 'Arial', fontSize: '3.375rem', fill: '#B7C4DD' });
-    text2 = this.add.text(650, 135, `Угадай слова нажимая на клеточки с нужными слогами. Инструкции: задание к игре`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#B7C4DD' });
+    text1 = this.add.text(650, 60, `Помоги пакману попасть на нужную клетку`, { fontFamily: 'Arial', fontSize: '3.375rem', fill: '#B7C4DD' });
+    text2 = this.add.text(650, 135, `Следуй голосовым инструкциям`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#B7C4DD' });
     let hasWon;
     localStorage.setItem('remainingLives', 3);
     localStorage.setItem('score', 0);
@@ -99,8 +101,6 @@ export class Game3 extends Scene {
     const grid = this.createGrid(cellRowCount, cellColCount, startX, startY, cellWidth, cellHeight);
 
     const pacman = this.add.sprite(1150, 820, 'pacman_left').setOrigin(0, 0);
-    const star = this.add.sprite(0, 0, 'star');
-    star.setVisible(false);
 
     const levelData = [
       { row: 1, col: 0 },
@@ -109,7 +109,6 @@ export class Game3 extends Scene {
       { row: 2, col: 2 },
       { row: 0, col: 0 }
     ];
-
 
     function updateLiveText() {
       let livesNumber = Number(localStorage.getItem('remainingLives'));
@@ -153,6 +152,9 @@ export class Game3 extends Scene {
         playTaskAudio(5);
         playGame(0, 0);
       },
+      6: () => {
+        addDialogWindow();
+      },
       default: () => {
         console.log(`Check the init func`);
       },
@@ -162,25 +164,47 @@ export class Game3 extends Scene {
       try {
         let currentLevel = Number(localStorage.getItem('level'));
         (loadLevel[currentLevel] || loadLevel.default)();
-
       } catch (err) {
         console.log(`Your error is:`, err);
       }
     }
     initializeGame();
 
-    function showStar(x, y) {
-      // Place the star image at the specified position and play the animation
-      star.setPosition(x, y);
-      star.setScale(1); // Reset the scale
-      star.setVisible(true);
-      star.setAlpha(1); // Reset alpha
-      // star.play('star-animation'); // Start the animation
+    function showStar(scene, cell) {
+      correctAudio1.play();
+      const star = scene.add.sprite(cell.x, cell.y, 'star').setOrigin(0, 0);
+      star.setScale(0);
+      star.setAlpha(1);
+
+      scene.tweens.add({
+        targets: star,
+        scale: 1,
+        duration: 500,
+        ease: 'In',
+        onComplete: () => {
+          scene.tweens.add({
+            targets: star,
+            y: cell.y - cellHeight,
+            duration: 200,
+            ease: 'Out',
+            onComplete: () => {
+              scene.tweens.add({
+                targets: star,
+                alpha: 0,
+                duration: 100,
+                ease: 'Out',
+                onComplete: () => {
+                  star.destroy();
+                },
+              });
+            },
+          });
+        },
+      });
     }
 
-    // showing the ghost
-
     function showGhost(scene, cell) {
+      wrongChoiceAudio.play();
       const redGhost = scene.add.sprite(cell.x, cell.y, 'red_ghost').setOrigin(0, 0);
 
       scene.tweens.add({
@@ -188,7 +212,7 @@ export class Game3 extends Scene {
         scaleX: 10,
         scaleY: 10,
         alpha: 0,
-        duration: 200,
+        duration: 600,
         ease: 'Linear',
         onComplete: () => {
           redGhost.setVisible(false);
@@ -216,15 +240,6 @@ export class Game3 extends Scene {
       }, 1000);
     }
 
-    // Creating the star animation
-    this.anims.create({
-      key: 'star-animation',
-      frames: this.anims.generateFrameNumbers('star', { start: 0, end: 10 }),
-      frameRate: 10,
-      hideOnComplete: true,
-    });
-
-
     function onCellClick(cell) {
 
       if (!cell.isClicked) {
@@ -236,7 +251,7 @@ export class Game3 extends Scene {
         const correctData = levelData[currentLevel - 1];
 
         if (correctData && row === correctData.row && col === correctData.col) {
-          showStar(cell.x, cell.y);
+          showStar(scene, cell);
           increaseLevel();
           score += 2;
           localStorage.setItem('score', score.toString());
@@ -261,44 +276,50 @@ export class Game3 extends Scene {
           }
         }
 
-        const topLeftX = startX + col * cellWidth + cellWidth / 3.5;
-        const topLeftY = startY + row * cellHeight + cellHeight / 3.5;
-        pacman.setPosition(topLeftX, topLeftY);
+        const centerX = startX + col * cellWidth + cellWidth / 3.5;
+        const centerY = startY + row * cellHeight + cellHeight / 3.5;
+        pacman.setPosition(centerX, centerY);
 
-        function addDialogWindow() {
+      }
+    }
 
-          let dialogWindow = document.createElement('dialog');
-          dialogWindow.setAttribute('id', 'dialog-loss');
-          document.body.appendChild(dialogWindow);
-          let closeDialogBtn = document.createElement('button');
-          closeDialogBtn.innerText = `Закрыть`;
+    function addDialogWindow() {
+      grid.forEach(row => {
+        row.forEach(cell => {
+          cell.disableInteractive();
+        });
+      });
 
-          if (localStorage.getItem('lesson3') === 'failed') {
-            dialogWindow.showModal();
-            dialogWindow.style.visibility = 'visible';
-            dialogWindow.textContent = `Тотальный провал! Так держать!`;
-            dialogWindow.appendChild(closeDialogBtn);
+      let dialogWindow = document.createElement('dialog');
+      dialogWindow.setAttribute('id', 'dialog-loss');
+      document.body.appendChild(dialogWindow);
+      let closeDialogBtn = document.createElement('button');
+      closeDialogBtn.innerText = `Закрыть`;
 
-            closeDialogBtn.addEventListener('click', () => {
-              dialogWindow.close();
-              document.body.removeChild(dialogWindow);
-              window.location.reload();
-              localStorage.clear();
-            });
-          } else {
-            dialogWindow.showModal();
-            dialogWindow.style.visibility = 'visible';
-            dialogWindow.textContent = `Здорово! Так держать!`;
-            dialogWindow.appendChild(closeDialogBtn);
+      if (localStorage.getItem('lesson3') === 'failed') {
+        dialogWindow.showModal();
+        dialogWindow.style.visibility = 'visible';
+        dialogWindow.textContent = `В следующий раз получится!`;
+        dialogWindow.appendChild(closeDialogBtn);
 
-            closeDialogBtn.addEventListener('click', () => {
-              dialogWindow.close();
-              document.body.removeChild(dialogWindow);
-              window.location.reload();
-              localStorage.clear();
-            });
-          }
-        }
+        closeDialogBtn.addEventListener('click', () => {
+          dialogWindow.close();
+          document.body.removeChild(dialogWindow);
+          window.location.reload();
+          localStorage.clear();
+        });
+      } else {
+        dialogWindow.showModal();
+        dialogWindow.style.visibility = 'visible';
+        dialogWindow.textContent = `Здорово! Так держать!`;
+        dialogWindow.appendChild(closeDialogBtn);
+
+        closeDialogBtn.addEventListener('click', () => {
+          dialogWindow.close();
+          document.body.removeChild(dialogWindow);
+          window.location.reload();
+          localStorage.clear();
+        });
       }
     }
 

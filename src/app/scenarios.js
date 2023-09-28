@@ -68,14 +68,14 @@ async function playTask3() {
 };
 
 async function playTask4() {
-    downAudio.play().then(setTimeout(() => { rightAudio.play() }, 2000))
-        .then(setTimeout(() => { downAudio.play() }, 4000))
-        .then(setTimeout(() => { click.play() }, 6000))
+    downAudio.play().then(setTimeout(() => { rightAudio.play() }, 1500))
+        .then(setTimeout(() => { downAudio.play() }, 3000))
+        .then(setTimeout(() => { click.play() }, 5000))
 };
 
 async function playTask5() {
-    upAudio.play().then(setTimeout(() => { leftAudio.play() }, 2000))
-        .then(setTimeout(() => { upAudio.play() }, 4000))
-        .then(setTimeout(() => { leftAudio.play() }, 6000))
-        .then(setTimeout(() => { click.play() }, 8000))
+    upAudio.play().then(setTimeout(() => { leftAudio.play() }, 1600))
+        .then(setTimeout(() => { upAudio.play() }, 3000))
+        .then(setTimeout(() => { leftAudio.play() }, 4800))
+        .then(setTimeout(() => { click.play() }, 6000))
 }; 
