@@ -28,6 +28,7 @@ const config = {
       patterns: [
         { from: "src/assets/imgs", to: "assets/imgs" },
         { from: "src/assets/SVG", to: "assets/SVG" },
+        { from: "src/assets/favicon", to: "assets/favicon" }
       ],
     }),
   ],

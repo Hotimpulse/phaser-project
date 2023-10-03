@@ -30,6 +30,8 @@ export class Game3 extends Scene {
     this.load.spritesheet('pacman_left', './assets/imgs/pacman_left.png', { frameWidth: 107, frameHeight: 112 });
     this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
     this.load.image('red_ghost', './assets/imgs/red_ghost.png');
+    this.load.image('yellow_ghost', './assets/imgs/yellow_ghost.png');
+    this.load.image('blue_ghost', './assets/imgs/blue_ghost.png');
   }
 
   createGrid(rows, cols, startX, startY, cellWidth, cellHeight) {
@@ -80,17 +82,17 @@ export class Game3 extends Scene {
 
     //  The text
     profileName = `User`;
-    this.add.text(250, 100, `${profileName}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: 'black' });
-    text1 = this.add.text(650, 60, `Помоги пакману попасть на нужную клетку`, { fontFamily: 'Arial', fontSize: '3.375rem', fill: '#B7C4DD' });
-    text2 = this.add.text(650, 135, `Следуй голосовым инструкциям`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#B7C4DD' });
+    this.add.text(250, 100, `${profileName}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: 'black' });
+    text1 = this.add.text(650, 60, `Помоги пакману попасть на нужную клетку`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#B7C4DD' });
+    text2 = this.add.text(650, 135, `Следуй голосовым инструкциям`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#B7C4DD' });
     let hasWon;
     localStorage.setItem('remainingLives', 3);
     localStorage.setItem('score', 0);
     let remainingLives = Number(localStorage.getItem('remainingLives'));
     let score = Number(localStorage.getItem('score'));
 
-    let liveText = this.add.text(120, 350, `Жизни: ${localStorage.getItem('remainingLives')}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#black' });
-    let scoreText = this.add.text(120, 390, `Очки: ${localStorage.getItem('score')}`, { fontFamily: 'Arial', fontSize: '1.5rem', fill: '#black' });
+    let liveText = this.add.text(120, 350, `Жизни: ${localStorage.getItem('remainingLives')}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#black' });
+    let scoreText = this.add.text(120, 390, `Очки: ${localStorage.getItem('score')}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#black' });
 
     const startX = 800;
     const startY = 220;
@@ -206,7 +208,6 @@ export class Game3 extends Scene {
     function showGhost(scene, cell) {
       wrongChoiceAudio.play();
       const redGhost = scene.add.sprite(cell.x, cell.y, 'red_ghost').setOrigin(0, 0);
-
       scene.tweens.add({
         targets: redGhost,
         scaleX: 10,

@@ -1,15 +1,12 @@
 import { playMainTaskAudio } from "./soundfile";
-
+import css from "../styles/index.css";
 export class LoadingScene extends Phaser.Scene {
     constructor() {
         super({ key: 'LoadingScene' });
     }
 
     preload() {
-
-
         this.cameras.main.setBackgroundColor('#2AC98C');
-
         const progressBar = this.add.graphics();
         const progressBox = this.add.graphics();
         progressBox.fillStyle(0x264653, 0.4);
@@ -23,7 +20,8 @@ export class LoadingScene extends Phaser.Scene {
             y: height / 2 - 50,
             text: 'Загрузка...',
             style: {
-                font: '40px monospace',
+                fontFamily: 'RecoletaRegular',
+                fontSize: '40px',
                 fill: '#ffffff'
             }
         });
@@ -34,7 +32,8 @@ export class LoadingScene extends Phaser.Scene {
             y: height / 2 - 5,
             text: '0%',
             style: {
-                font: '40px monospace',
+                fontFamily: 'RecoletaRegular',
+                fontSize: '40px',
                 fill: '#ffffff'
             }
         });
@@ -54,10 +53,18 @@ export class LoadingScene extends Phaser.Scene {
             percentText.destroy();
         });
 
+        const textStyle = {
+            fontFamily: 'RecoletaRegular',
+            fontSize: '40px',
+            fill: 'white',
+        };
+
+        const instructionText = this.add.text(width / 2.8, height / 1.5, 'Приготовься слушать инструкции', textStyle);
+
         this.load.image('bg', './assets/imgs/screen_load.png');
         this.load.svg('startButton', './assets/SVG/icon_start.svg', { width: 200, height: 200 });
-
-        for (let i = 0; i < 100; i++) {
+        this.load.svg('soundButton', './assets/SVG/sound_btn.svg', { width: 150, height: 150 });
+        for (let i = 0; i < 200; i++) {
             this.load.image('bg' + i, './assets/imgs/screen_load.png');
         }
     }
@@ -67,18 +74,30 @@ export class LoadingScene extends Phaser.Scene {
         const blackOverlay = this.add.graphics();
         blackOverlay.fillStyle(0x000000, 0.5);
         blackOverlay.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
-        await playMainTaskAudio().then(() => {
-            
-        })
+
         const startButton = this.add.sprite(
             this.game.config.width / 2,
             this.game.config.height / 2,
             'startButton'
         );
+        startButton.on('pointerover', () => {
+            startButton.setTexture('soundButton');
+        });
+        startButton.on('pointerout', () => {
+            startButton.setTexture('startButton');
+        });
         startButton.setInteractive();
 
         startButton.on('pointerdown', () => {
-            this.scene.start('Game3');
+            let isPlaying = false;
+            playMainTaskAudio();
+            if (!isPlaying) {
+                startButton.disableInteractive();
+                setTimeout(() => {
+                    startButton.setInteractive();
+                    this.scene.start('Game3');
+                }, 13000);
+            }
         });
     }
 }
