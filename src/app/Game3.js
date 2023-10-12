@@ -50,15 +50,7 @@ export class Game3 extends Scene {
     return grid;
   }
 
-  trackStarsAndHearts() {
-    let heartsNum = Number(localStorage.getItem('remainingLives')); // "3"
-    let starsNum = Number(localStorage.getItem('score')); // "0"
 
-    for (let i = 0; i <= starsNum.length; i++) {
-      this.add.image(1100, 200, 'star')[i];
-      this.add.image(1100, 200, 'heart')[i];
-    }
-  }
 
   create() {
     const scene = this;
@@ -73,6 +65,7 @@ export class Game3 extends Scene {
     this.add.image(240, 700, 'rect_small');
     this.add.image(150, 140, 'profile_icon');
     this.add.sprite(1180, 540, 'main-rect');
+
     // sound button behavior
     const soundIcon = this.add.sprite(660, 145, 'sound_icon');
     soundIcon.setInteractive();
@@ -83,8 +76,35 @@ export class Game3 extends Scene {
     const closeIcon = this.add.sprite(1820, 105, 'close_icon');
     closeIcon.setInteractive();
     closeIcon.on("pointerdown", () => {
-      window.close();
+      window.location.reload();
     });
+
+    // stars and hearts
+    function trackStarsAndHearts() {
+      const sceneWidth = 1920;
+      // const sceneHeight = 1080;
+      let heartsNum = Number(localStorage.getItem('remainingLives')) || 0;
+      let starsNum = Number(localStorage.getItem('score')) || 0;
+
+      const existingHearts = scene.children.getChildren().filter(child => child.texture && child.texture.key === 'heart');
+      const existingStars = scene.children.getChildren().filter(child => child.texture && child.texture.key === 'star');
+
+      existingHearts.forEach(heart => heart.destroy());
+      existingStars.forEach(star => star.destroy());
+
+      for (let i = 0; i < heartsNum; i++) {
+        const heart = scene.add.sprite(650, 300 + i * 150, 'heart');
+        heart.setScale(1);
+      }
+      for (let i = 0; i < starsNum; i++) {
+        const star = scene.add.sprite(sceneWidth - 200, 300 + i * 150, 'star');
+        star.setScale(1);
+      }
+
+    }
+    trackStarsAndHearts();
+    let interval = setInterval(trackStarsAndHearts, 100);
+
 
     //  The text
     profileName = `User`;
@@ -259,7 +279,6 @@ export class Game3 extends Scene {
 
         const centerX = startX + col * cellWidth + cellWidth / 3.5;
         const centerY = startY + row * cellHeight + cellHeight / 3.5;
-
         if (correctData && row === correctData.row && col === correctData.col) {
           pacman.setPosition(centerX, centerY);
 

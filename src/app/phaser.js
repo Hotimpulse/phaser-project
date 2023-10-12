@@ -1,7 +1,3 @@
-import { playTaskAudio } from "./scenarios";
-import { playMainTaskAudio } from "./soundfile";
-import { createGameDiv, initializeGame } from "./game";
-import { pacmanGameRun } from "./game";
 import { LoadingScene } from "./LoadingScene";
 import { Game3 } from "./Game3";
 
@@ -26,7 +22,7 @@ export function init(targetDiv) {
             }
         },
     };
-
+    console.log('Scenes registered:', config.scene);
     const game = new Phaser.Game(config);
     game.scene.start('LoadingScene');
 }
