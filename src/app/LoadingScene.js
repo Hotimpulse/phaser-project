@@ -7,66 +7,66 @@ export class LoadingScene extends Phaser.Scene {
 
     preload() {
         this.cameras.main.setBackgroundColor('#2AC98C');
-        const progressBar = this.add.graphics();
-        const progressBox = this.add.graphics();
-        progressBox.fillStyle(0x264653, 0.4);
-        progressBox.fillRect(1920 / 3, 300, 670, 50);
+        // const progressBar = this.add.graphics();
+        // const progressBox = this.add.graphics();
+        // progressBox.fillStyle(0x264653, 0.4);
+        // progressBox.fillRect(1920 / 3, 300, 670, 50);
 
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
 
-        const loadingText = this.make.text({
-            x: width / 2,
-            y: height / 2 - 50,
-            text: 'Загрузка...',
-            style: {
-                fontFamily: 'RecoletaRegular',
-                fontSize: '40px',
-                fill: '#ffffff'
-            }
-        });
-        loadingText.setOrigin(0.5, 0.5);
+        // const loadingText = this.make.text({
+        //     x: width / 2,
+        //     y: height / 2 - 50,
+        //     text: 'Загрузка...',
+        //     style: {
+        //         fontFamily: 'RecoletaRegular',
+        //         fontSize: '40px',
+        //         fill: '#ffffff'
+        //     }
+        // });
+        // loadingText.setOrigin(0.5, 0.5);
 
-        const percentText = this.make.text({
-            x: width / 2,
-            y: height / 2 - 5,
-            text: '0%',
-            style: {
-                fontFamily: 'RecoletaRegular',
-                fontSize: '40px',
-                fill: '#ffffff'
-            }
-        });
-        percentText.setOrigin(0.5, 0.5);
+        // const percentText = this.make.text({
+        //     x: width / 2,
+        //     y: height / 2 - 5,
+        //     text: '0%',
+        //     style: {
+        //         fontFamily: 'RecoletaRegular',
+        //         fontSize: '40px',
+        //         fill: '#ffffff'
+        //     }
+        // });
+        // percentText.setOrigin(0.5, 0.5);
 
-        this.load.on('progress', (value) => {
-            percentText.setText(parseInt(value * 100) + '%');
-            progressBar.clear();
-            progressBar.fillStyle(0xE9C46A, 1);
-            progressBar.fillRect(1920 / 3, 310, 670 * value, 30);
-        });
+        // this.load.on('progress', (value) => {
+        //     percentText.setText(parseInt(value * 100) + '%');
+        //     progressBar.clear();
+        //     progressBar.fillStyle(0xE9C46A, 1);
+        //     progressBar.fillRect(1920 / 3, 310, 670 * value, 30);
+        // });
 
-        this.load.on('complete', () => {
-            progressBar.destroy();
-            progressBox.destroy();
-            loadingText.destroy();
-            percentText.destroy();
-        });
+        // this.load.on('complete', () => {
+        //     progressBar.destroy();
+        //     progressBox.destroy();
+        //     loadingText.destroy();
+        //     percentText.destroy();
+        // });
 
-        const textStyle = {
-            fontFamily: 'RecoletaRegular',
-            fontSize: '40px',
-            fill: 'white',
-        };
+        // const textStyle = {
+        //     fontFamily: 'RecoletaRegular',
+        //     fontSize: '40px',
+        //     fill: 'white',
+        // };
 
-        const instructionText = this.add.text(width / 2.8, height / 1.5, 'Приготовься слушать инструкции', textStyle);
+        // const instructionText = this.add.text(width / 2.8, height / 1.5, 'Приготовься слушать инструкции', textStyle);
 
-        this.load.image('bg', './assets/imgs/screen_load.png');
-        this.load.svg('startButton', './assets/SVG/icon_start.svg', { width: 200, height: 200 });
-        this.load.svg('soundButton', './assets/SVG/sound_btn.svg', { width: 150, height: 150 });
-        for (let i = 0; i < 200; i++) {
-            this.load.image('bg' + i, './assets/imgs/screen_load.png');
-        }
+        // this.load.image('bg', './assets/imgs/screen_load.png');
+        // this.load.svg('startButton', './assets/SVG/icon_start.svg', { width: 200, height: 200 });
+        // this.load.svg('soundButton', './assets/SVG/sound_btn.svg', { width: 150, height: 150 });
+        // for (let i = 0; i < 40; i++) {
+        //     this.load.image('bg' + i, './assets/imgs/screen_load.png');
+        // }
     }
 
     async create() {
@@ -90,13 +90,13 @@ export class LoadingScene extends Phaser.Scene {
 
         startButton.on('pointerdown', () => {
             let isPlaying = false;
-            playMainTaskAudio();
+            // playMainTaskAudio(); uncomment this to play the audio
             if (!isPlaying) {
                 startButton.disableInteractive();
                 setTimeout(() => {
                     startButton.setInteractive();
                     this.scene.start('Game3');
-                }, 13000);
+                }, 13); //13000
             }
         });
     }

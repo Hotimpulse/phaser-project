@@ -1,10 +1,5 @@
 import { Scene } from 'phaser';
-import upSound from '../assets/sounds/up.mp3';
-import leftSound from '../assets/sounds/left.mp3';
-import rightSound from '../assets/sounds/right.mp3';
-import downSound from '../assets/sounds/down.mp3';
 import { playTaskAudio, correctAudio1, correctAudio2, endGameAudio, wrongChoiceAudio, tryAgainAudio, tryNextTimeAudio } from "./scenarios";
-import tryNextTime from '../assets/sounds/try_next_time.mp3';
 import { playMainTaskAudio } from './soundfile';
 
 export class Game3 extends Scene {
@@ -29,6 +24,7 @@ export class Game3 extends Scene {
     this.load.svg('card', './assets/SVG/tabler_square-filled.svg', { width: 264, height: 264 });
     this.load.spritesheet('pacman_left', './assets/imgs/pacman_left.png', { frameWidth: 107, frameHeight: 112 });
     this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
+    this.load.svg('heart', './assets/SVG/heart.svg', { width: 100, height: 100 });
     this.load.image('red_ghost', './assets/imgs/red_ghost.png');
     this.load.image('yellow_ghost', './assets/imgs/yellow_ghost.png');
     this.load.image('blue_ghost', './assets/imgs/blue_ghost.png');
@@ -52,6 +48,16 @@ export class Game3 extends Scene {
       }
     }
     return grid;
+  }
+
+  trackStarsAndHearts() {
+    let heartsNum = Number(localStorage.getItem('remainingLives')); // "3"
+    let starsNum = Number(localStorage.getItem('score')); // "0"
+
+    for (let i = 0; i <= starsNum.length; i++) {
+      this.add.image(1100, 200, 'star')[i];
+      this.add.image(1100, 200, 'heart')[i];
+    }
   }
 
   create() {
@@ -251,10 +257,15 @@ export class Game3 extends Scene {
         const currentLevel = Number(localStorage.getItem('level'));
         const correctData = levelData[currentLevel - 1];
 
+        const centerX = startX + col * cellWidth + cellWidth / 3.5;
+        const centerY = startY + row * cellHeight + cellHeight / 3.5;
+
         if (correctData && row === correctData.row && col === correctData.col) {
+          pacman.setPosition(centerX, centerY);
+
           showStar(scene, cell);
           increaseLevel();
-          score += 2;
+          score += 1;
           localStorage.setItem('score', score.toString());
           updateScoreText();
         } else {
@@ -276,11 +287,6 @@ export class Game3 extends Scene {
             addDialogWindow();
           }
         }
-
-        const centerX = startX + col * cellWidth + cellWidth / 3.5;
-        const centerY = startY + row * cellHeight + cellHeight / 3.5;
-        pacman.setPosition(centerX, centerY);
-
       }
     }
 

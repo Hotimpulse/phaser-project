@@ -6,9 +6,15 @@
 
 body {
   font-size: 1.5rem;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: RecoletaRegular;
 }
 
+@font-face {
+  font-family: "RecoletaRegular";
+  src: url("../assets/fonts/Recoleta/woff/Recoleta Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 #main-wrapper {
   display: flex;
   flex-direction: column;
@@ -23,7 +29,7 @@ body {
   justify-content: center;
   align-items: center;
   margin: 0 auto;
-  margin-top: 10rem;
+  margin-top: 5rem;
 }
 
 #button-run {
