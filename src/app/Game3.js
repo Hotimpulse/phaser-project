@@ -24,10 +24,11 @@ export class Game3 extends Scene {
     this.load.svg('card', './assets/SVG/tabler_square-filled.svg', { width: 264, height: 264 });
     this.load.spritesheet('pacman_left', './assets/imgs/pacman_left.png', { frameWidth: 107, frameHeight: 112 });
     this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
+    this.load.svg('starSpecial', './assets/SVG/star.svg', { width: 100, height: 100 });
     this.load.svg('heart', './assets/SVG/heart.svg', { width: 100, height: 100 });
-    this.load.image('red_ghost', './assets/imgs/red_ghost.png');
-    this.load.image('yellow_ghost', './assets/imgs/yellow_ghost.png');
-    this.load.image('blue_ghost', './assets/imgs/blue_ghost.png');
+    this.load.svg('red_ghost', './assets/SVG/red_ghost.svg');
+    this.load.svg('yellow_ghost', './assets/SVG/yellow_ghost.svg');
+    this.load.svg('blue_ghost', './assets/SVG/blue_ghost.svg');
   }
 
   createGrid(rows, cols, startX, startY, cellWidth, cellHeight) {
@@ -87,7 +88,7 @@ export class Game3 extends Scene {
       let starsNum = Number(localStorage.getItem('score')) || 0;
 
       const existingHearts = scene.children.getChildren().filter(child => child.texture && child.texture.key === 'heart');
-      const existingStars = scene.children.getChildren().filter(child => child.texture && child.texture.key === 'star');
+      const existingStars = scene.children.getChildren().filter(child => child.texture && child.texture.key === 'starSpecial');
 
       existingHearts.forEach(heart => heart.destroy());
       existingStars.forEach(star => star.destroy());
@@ -97,7 +98,7 @@ export class Game3 extends Scene {
         heart.setScale(1);
       }
       for (let i = 0; i < starsNum; i++) {
-        const star = scene.add.sprite(sceneWidth - 200, 300 + i * 150, 'star');
+        const star = scene.add.sprite(sceneWidth - 200, 300 + i * 150, 'starSpecial');
         star.setScale(1);
       }
 
@@ -231,18 +232,18 @@ export class Game3 extends Scene {
       });
     }
 
-    function showGhost(scene, cell) {
+    function showGhost(scene, cell, ghostColor) {
       wrongChoiceAudio.play();
-      const redGhost = scene.add.sprite(cell.x, cell.y, 'red_ghost').setOrigin(0, 0);
+      const ghost = scene.add.sprite(cell.x, cell.y, `${ghostColor}`).setOrigin(0, 0);
       scene.tweens.add({
-        targets: redGhost,
+        targets: ghost,
         scaleX: 10,
         scaleY: 10,
         alpha: 0,
         duration: 600,
         ease: 'Linear',
         onComplete: () => {
-          redGhost.setVisible(false);
+          ghost.setVisible(false);
 
           // Blinking pacman logic
           blinkPacman(pacman);
@@ -294,7 +295,13 @@ export class Game3 extends Scene {
           remainingLives -= 1;
           localStorage.setItem('remainingLives', remainingLives.toString());
           updateLiveText();
-          showGhost(scene, cell);
+          if (localStorage.getItem('remainingLives') === "2") {
+            showGhost(scene, cell, 'red_ghost');
+          } else if (localStorage.getItem('remainingLives') === "1") {
+            showGhost(scene, cell, 'yellow_ghost');
+          } else if (localStorage.getItem('remainingLives') === "0") {
+            showGhost(scene, cell, 'blue_ghost');
+          }
           tryAgainAudio.play();
 
           if (remainingLives < 0) {

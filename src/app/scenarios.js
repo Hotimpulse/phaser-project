@@ -51,8 +51,10 @@ export function playTaskAudio(task) {
 };
 
 async function playTask1() {
+    this.scene.disableInteractive();
     upAudio.play().then(setTimeout(() => { leftAudio.play() }, 1000))
         .then(setTimeout(() => { click.play() }, 2000));
+    this.scene.setInteractive();
 };
 
 async function playTask2() {
