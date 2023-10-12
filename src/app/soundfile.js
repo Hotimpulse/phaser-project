@@ -15,12 +15,21 @@ import tryAgainSound from '../assets/sounds/try_again.mp3';
 import tryNextTime from '../assets/sounds/try_next_time.mp3';
 import wrongChoiceSound from '../assets/sounds/wrong_choice.mp3';
 
-export async function playMainTaskAudio() {
-    task2Sound.play().then(setTimeout(() => {
+export async function playMainTaskAudio(scene) {
+    scene.input.enabled = false;
+    task2Sound.play();
+    task2Sound.onended = () => {
         task3Sound.play();
-    }, 3000)).then(setTimeout(() => {
-        task1Sound.play();
-    }, 8000))
+        task3Sound.onended = () => {
+            task1Sound.play();
+            scene.input.enabled = true;
+        }
+    }
+    // task2Sound.play().then(setTimeout(() => {
+    //     task3Sound.play();
+    // }, 3000)).then(setTimeout(() => {
+    //     task1Sound.play();
+    // }, 8000))
 }
 
 export let task1Sound = new Audio(mainTaskSound);

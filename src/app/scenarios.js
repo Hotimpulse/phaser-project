@@ -28,56 +28,112 @@ export let wrongChoiceAudio = new Audio(wrongChoiceSound);
 export let tryAgainAudio = new Audio(try_again);
 export let tryNextTimeAudio = new Audio(tryNextTime);
 
-export function playTaskAudio(task) {
+export function playTaskAudio(scene, task) {
+    scene.input.enabled = false;
+
     switch (task) {
         case 1:
-            playTask1();
+            playTask1(scene);
             break;
         case 2:
-            playTask2();
+            playTask2(scene);
             break;
         case 3:
-            playTask3();
+            playTask3(scene);
             break;
         case 4:
-            playTask4();
+            playTask4(scene);
             break;
         case 5:
-            playTask5();
+            playTask5(scene);
             break;
         default:
             console.log(`playTaskAudio() plays the audio`);
     }
 };
 
-async function playTask1() {
-    this.scene.disableInteractive();
-    upAudio.play().then(setTimeout(() => { leftAudio.play() }, 1000))
-        .then(setTimeout(() => { click.play() }, 2000));
-    this.scene.setInteractive();
+function playTask1(scene) {
+    upAudio.play();
+    upAudio.onended = () => {
+        leftAudio.play();
+        leftAudio.onended = () => {
+            click.play();
+            scene.input.enabled = true;
+        };
+    };
+    // upAudio.play().then(setTimeout(() => { leftAudio.play() }, 1000))
+    //     .then(setTimeout(() => { click.play() }, 2000));
+    // this.scene.setInteractive();
 };
 
-async function playTask2() {
-    rightAudio.play().then(setTimeout(() => { rightAudio.play() }, 1800))
-        .then(setTimeout(() => { upAudio.play() }, 2500))
-        .then(setTimeout(() => { click.play() }, 3500))
+function playTask2(scene) {
+    rightAudio.play();
+    rightAudio.onended = () => {
+        rightAudio.play();
+        rightAudio.onended = () => {
+            upAudio.play();
+            upAudio.onended = () => {
+                click.play();
+                scene.input.enabled = true;
+            }
+        }
+    }
+    // rightAudio.play().then(setTimeout(() => { rightAudio.play() }, 1800))
+    //     .then(setTimeout(() => { upAudio.play() }, 2500))
+    //     .then(setTimeout(() => { click.play() }, 3500))
 };
 
-async function playTask3() {
-    downAudio.play().then(setTimeout(() => { leftAudio.play() }, 1500))
-        .then(setTimeout(() => { upAudio.play() }, 2500))
-        .then(setTimeout(() => { click.play() }, 4000))
+function playTask3(scene) {
+    downAudio.play();
+    downAudio.onended = () => {
+        leftAudio.play();
+        leftAudio.onended = () => {
+            upAudio.play();
+            upAudio.onended = () => {
+                click.play();
+                scene.input.enabled = true;
+            }
+        }
+    }
+    // downAudio.play().then(setTimeout(() => { leftAudio.play() }, 1500))
+    //     .then(setTimeout(() => { upAudio.play() }, 2500))
+    //     .then(setTimeout(() => { click.play() }, 4000))
 };
 
-async function playTask4() {
-    downAudio.play().then(setTimeout(() => { rightAudio.play() }, 1500))
-        .then(setTimeout(() => { downAudio.play() }, 3000))
-        .then(setTimeout(() => { click.play() }, 5000))
+function playTask4(scene) {
+    downAudio.play();
+    downAudio.onended = () => {
+        rightAudio.play();
+        rightAudio.onended = () => {
+            downAudio.play();
+            downAudio.onended = () => {
+                click.play();
+                scene.input.enabled = true;
+            }
+        }
+    }
+    // downAudio.play().then(setTimeout(() => { rightAudio.play() }, 1500))
+    //     .then(setTimeout(() => { downAudio.play() }, 3000))
+    //     .then(setTimeout(() => { click.play() }, 5000))
 };
 
-async function playTask5() {
-    upAudio.play().then(setTimeout(() => { leftAudio.play() }, 1600))
-        .then(setTimeout(() => { upAudio.play() }, 3000))
-        .then(setTimeout(() => { leftAudio.play() }, 4800))
-        .then(setTimeout(() => { click.play() }, 6000))
+function playTask5(scene) {
+    upAudio.play();
+    upAudio.onended = () => {
+        leftAudio.play();
+        leftAudio.onended = () => {
+            upAudio.play();
+            upAudio.onended = () => {
+                leftAudio.play();
+                leftAudio.onended = () => {
+                    click.play();
+                    scene.input.enabled = true;
+                }
+            }
+        }
+    }
+    // upAudio.play().then(setTimeout(() => { leftAudio.play() }, 1600))
+    //     .then(setTimeout(() => { upAudio.play() }, 3000))
+    //     .then(setTimeout(() => { leftAudio.play() }, 4800))
+    //     .then(setTimeout(() => { click.play() }, 6000))
 }; 

@@ -162,23 +162,23 @@ export class Game3 extends Scene {
 
     const loadLevel = {
       1: () => {
-        playTaskAudio(1);
+        playTaskAudio(this, 1);
         playGame(1, 0);
       },
       2: () => {
-        playTaskAudio(2);
+        playTaskAudio(this, 2);
         playGame(0, 2);
       },
       3: () => {
-        playTaskAudio(3);
+        playTaskAudio(this, 3);
         playGame(0, 1);
       },
       4: () => {
-        playTaskAudio(4);
+        playTaskAudio(this, 4);
         playGame(2, 2);
       },
       5: () => {
-        playTaskAudio(5);
+        playTaskAudio(this, 5);
         playGame(0, 0);
       },
       6: () => {

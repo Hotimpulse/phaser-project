@@ -92,13 +92,13 @@ export class LoadingScene extends Scene {
 
         startButton.on('pointerdown', () => {
             let isPlaying = false;
-            // playMainTaskAudio();
+            playMainTaskAudio(this);
             if (!isPlaying) {
                 startButton.disableInteractive();
                 setTimeout(() => {
                     startButton.setInteractive();
                     this.scene.start('Game3');
-                }, 13); // 13000
+                }, 12000); 
             }
         });
     }
