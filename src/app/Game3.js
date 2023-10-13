@@ -9,6 +9,7 @@ export class Game3 extends Scene {
 
   preload() {
     this.load.svg('startButton', './assets/SVG/close.svg');
+    this.load.svg('full-screen-button', './assets/SVG/full_screen_icon.svg');
     this.load.image('layer1', './assets/imgs/bg_layer1.png');
     this.load.image('layer2', './assets/imgs/bg_layer2.png');
     this.load.image('final_screen', './assets/imgs/final_screen_graphics.png');
@@ -65,6 +66,19 @@ export class Game3 extends Scene {
     this.add.image(240, 700, 'rect_small');
     this.add.image(150, 140, 'profile_icon');
     this.add.sprite(1180, 540, 'main-rect');
+
+    // full screen btn
+    const fullScreenBtn = this.add.sprite(1920 - 100, 1080 - 100, 'full-screen-button');
+    fullScreenBtn.setScale(3);
+    fullScreenBtn.setInteractive().on('pointerup', function () {
+
+      if (this.scale.isFullscreen) {
+        this.scale.stopFullscreen();
+      } else {
+        this.scale.startFullscreen();
+      }
+    }, this);
+
     // sound button behavior
     const soundIcon = this.add.sprite(660, 145, 'sound_icon');
     soundIcon.setInteractive();

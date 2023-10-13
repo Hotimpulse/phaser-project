@@ -7,7 +7,7 @@ export class LoadingScene extends Scene {
     }
 
     preload() {
-        console.log('LoadingScene created');
+        this.load.svg('full-screen-button', './assets/SVG/full_screen_icon.svg');
         this.cameras.main.setBackgroundColor('#2AC98C');
         const progressBar = this.add.graphics();
         const progressBox = this.add.graphics();
@@ -72,11 +72,22 @@ export class LoadingScene extends Scene {
     }
 
     async create() {
-
         this.add.image(1920 / 2, 1080 / 2, 'bg');
         const blackOverlay = this.add.graphics();
         blackOverlay.fillStyle(0x000000, 0.5);
         blackOverlay.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
+        const fullScreenBtn = this.add.sprite(1920 - 100, 1080 - 100, 'full-screen-button');
+        fullScreenBtn.setScale(3);
+        fullScreenBtn.setInteractive().on('pointerup', function () {
+
+            if (this.scale.isFullscreen) {
+                this.scale.stopFullscreen();
+            }
+            else {
+                this.scale.startFullscreen();
+            }
+
+        }, this);
 
         const startButton = this.add.sprite(
             this.game.config.width / 2,
@@ -98,13 +109,13 @@ export class LoadingScene extends Scene {
 
             let isPlaying = false;
             playMainTaskAudio(this);
-            
+
             if (!isPlaying) {
                 startButton.disableInteractive();
                 setTimeout(() => {
                     startButton.setInteractive();
                     this.scene.start('Game3');
-                }, 12000); 
+                }, 12000);
             }
         });
     }
