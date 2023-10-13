@@ -15,18 +15,18 @@ export function init(targetDiv) {
             createContainer: true
         },
         scene: [LoadingScene, Game3],
-        callbacks: {
-            postBoot: function (game) {
-                game.canvas.style.width = `70%`;
-                game.canvas.style.height = `70%`;
-            }
-        },
+        // callbacks: {
+        //     postBoot: function (game) {
+        //         game.canvas.style.width = `100%`;
+        //         game.canvas.style.height = `100%`;
+        //     }
+        // },
         scale: {
             mode: Phaser.Scale.ScaleModes.FIT,
             autoCenter: Phaser.Scale.Center.CENTER_BOTH
         }
     };
-    console.log('Scenes registered:', config.scene);
+    // console.log('Scenes registered:', config.scene);
     const game = new Phaser.Game(config);
     game.scene.start('LoadingScene');
 }

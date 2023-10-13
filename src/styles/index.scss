@@ -7,6 +7,7 @@
 body {
   font-size: 1.5rem;
   font-family: RecoletaRegular;
+  overflow: hidden;
 }
 
 @font-face {
@@ -18,9 +19,9 @@ body {
 
 #game {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  // flex-direction: column;
+  // justify-content: center;
+  // align-items: center;
   margin: 0 auto;
 }
 
@@ -165,24 +166,24 @@ body {
 
 // animations
 
-.star-animation {
-  animation: flyAndFade 0.5s ease-in-out forwards;
-}
+// .star-animation {
+//   animation: flyAndFade 0.5s ease-in-out forwards;
+// }
 
-@keyframes flyAndFade {
-  0% {
-    display: flex;
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+// @keyframes flyAndFade {
+//   0% {
+//     display: flex;
+//     transform: translateY(0) scale(1);
+//     opacity: 1;
+//   }
 
-  50% {
-    transform: translateY(0) scale(1.5);
-  }
+//   50% {
+//     transform: translateY(0) scale(1.5);
+//   }
 
-  100% {
-    display: none;
-    transform: translateY(-200%) scale(0);
-    opacity: 0;
-  }
-}
+//   100% {
+//     display: none;
+//     transform: translateY(-200%) scale(0);
+//     opacity: 0;
+//   }
+// }

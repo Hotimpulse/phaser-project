@@ -352,7 +352,7 @@ export class Game3 extends Scene {
         У тебя ${localStorage.getItem('score')}`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#FFF' });
         let lilStar = scene.add.sprite(990, 632, 'star');
         lilStar.setScale(0.5);
-        let closeIcon = scene.add.sprite(1920 / 2, 700, 'close_icon');
+        let closeIcon = scene.add.sprite(1920 - 100, 100, 'close_icon');
         closeIcon.setScale(1.5);
         closeIcon.setInteractive();
         closeIcon.on('pointerdown', () => {
