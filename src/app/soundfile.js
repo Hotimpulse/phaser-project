@@ -9,14 +9,11 @@ export async function playMainTaskAudio(scene) {
         task3Sound.play();
         task3Sound.onended = () => {
             task1Sound.play();
-            scene.input.enabled = true;
+            task1Sound.onended = () => {
+                scene.input.enabled = true;
+            }
         }
     }
-    // task2Sound.play().then(setTimeout(() => {
-    //     task3Sound.play();
-    // }, 3000)).then(setTimeout(() => {
-    //     task1Sound.play();
-    // }, 8000))
 }
 
 export let task1Sound = new Audio(mainTaskSound);

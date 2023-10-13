@@ -13,6 +13,7 @@ export class Game3 extends Scene {
     this.load.image('layer1', './assets/imgs/bg_layer1.png');
     this.load.image('layer2', './assets/imgs/bg_layer2.png');
     this.load.image('final_screen', './assets/imgs/final_screen_graphics.png');
+    this.load.svg('border', './assets/SVG/border.svg');
 
     this.load.svg('sound_icon', './assets/SVG/sound_icon.svg');
     this.load.svg('close_icon', './assets/SVG/close.svg');
@@ -22,9 +23,9 @@ export class Game3 extends Scene {
     this.load.svg('rect_points', './assets/SVG/rect_points.svg');
     this.load.svg('rect_small', './assets/SVG/rect_small.svg');
     this.load.image('main-rect', './assets/imgs/rectangle-main.png');
+    this.load.svg('card', './assets/SVG/tile.svg', { width: 240, height: 240 });
 
-    this.load.svg('card', './assets/SVG/tabler_square-filled.svg', { width: 264, height: 264 });
-    this.load.spritesheet('pacman_left', './assets/imgs/pacman_left.png', { frameWidth: 107, frameHeight: 112 });
+    // this.load.spritesheet('pacman', './assets/SVG/pacman.svg', { frameWidth: 107, frameHeight: 112 });
     this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
     this.load.svg('starSpecial', './assets/SVG/star.svg', { width: 100, height: 100 });
     this.load.svg('heart', './assets/SVG/heart.svg', { width: 100, height: 100 });
@@ -34,6 +35,7 @@ export class Game3 extends Scene {
   }
 
   createGrid(rows, cols, startX, startY, cellWidth, cellHeight) {
+
     const grid = [];
     for (let row = 0; row < rows; row++) {
       grid[row] = [];
@@ -42,7 +44,7 @@ export class Game3 extends Scene {
           startX + col * cellWidth,
           startY + row * cellHeight,
           'card'
-        ).setOrigin(0, 0);
+        ).setOrigin(0, 0).setAlpha(0.9);
 
         cell.row = row;
         cell.col = col;
@@ -66,7 +68,6 @@ export class Game3 extends Scene {
     this.add.image(240, 700, 'rect_small');
     this.add.image(150, 140, 'profile_icon');
     this.add.sprite(1180, 540, 'main-rect');
-
     // full screen btn
     const fullScreenBtn = this.add.sprite(1920 - 100, 1080 - 100, 'full-screen-button');
     fullScreenBtn.setScale(3);
@@ -119,8 +120,8 @@ export class Game3 extends Scene {
     //  The text
     profileName = `User`;
     this.add.text(250, 100, `${profileName}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: 'black' });
-    text1 = this.add.text(650, 60, `Помоги пакману попасть на нужную клетку`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#B7C4DD' });
-    text2 = this.add.text(650, 135, `Следуй голосовым инструкциям`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#B7C4DD' });
+    text1 = this.add.text(650, 60, `Поиск сокровищ`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#B7C4DD' });
+    text2 = this.add.text(650, 135, `Помоги пакману в поиске звёздочек. Получи 5 звёзд и открой секретный сундук!`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#B7C4DD' });
     let hasWon;
     localStorage.setItem('remainingLives', 3);
     localStorage.setItem('score', 0);
@@ -130,15 +131,45 @@ export class Game3 extends Scene {
     let liveText = this.add.text(120, 350, `Жизни: ${localStorage.getItem('remainingLives')}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#black' });
     let scoreText = this.add.text(120, 390, `Очки: ${localStorage.getItem('score')}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#black' });
 
-    const startX = 800;
+    const startX = 820;
     const startY = 220;
-    const cellWidth = 264;
-    const cellHeight = 264;
+    const cellWidth = 240;
+    const cellHeight = 240;
     const cellRowCount = 3;
     const cellColCount = 3;
     const grid = this.createGrid(cellRowCount, cellColCount, startX, startY, cellWidth, cellHeight);
+    this.add.sprite(1180, 580, 'border');
 
-    const pacman = this.add.sprite(1150, 820, 'pacman_left').setOrigin(0, 0);
+    // const pacman = this.add.sprite(1130, 775, 'pacman').setOrigin(0, 0);
+
+    // creating an animated pacman character
+    let pacmanGraphics, pacmanTween;
+
+    function createPacmanTween(scene, x, y) {
+      return scene.tweens.addCounter({
+        from: 0,
+        to: 30,
+        duration: 300,
+        yoyo: true,
+        repeat: -1,
+        onUpdate: function (tween) {
+          const t = tween.getValue();
+
+          pacmanGraphics.clear();
+          pacmanGraphics.fillStyle(0xffff00, 1);
+          pacmanGraphics.slice(x, y, 60, Phaser.Math.DegToRad(330 + t), Phaser.Math.DegToRad(30 - t), true);
+          pacmanGraphics.fillPath();
+        }
+      });
+    }
+
+    function createPacmanGraphics(scene) {
+      pacmanGraphics = scene.add.graphics();
+      pacmanTween = createPacmanTween(scene, 1180, 830);
+    }
+
+    createPacmanGraphics(this);
+
 
     const levelData = [
       { row: 1, col: 0 },
@@ -217,6 +248,7 @@ export class Game3 extends Scene {
       scene.tweens.add({
         targets: star,
         scale: 1,
+        rotation: Math.PI * 4,
         duration: 500,
         ease: 'In',
         onComplete: () => {
@@ -255,25 +287,26 @@ export class Game3 extends Scene {
           ghost.setVisible(false);
 
           // Blinking pacman logic
-          blinkPacman(pacman);
+          blinkPacman(pacmanGraphics);
         }
       });
     }
 
-    function blinkPacman(pacman) {
+    function blinkPacman(pacmanGraphics) {
+
       let isHidden = false;
       const blinkInterval = setInterval(() => {
         if (isHidden) {
-          pacman.setVisible(true);
+          pacmanGraphics.setAlpha(1);
         } else {
-          pacman.setVisible(false);
+          pacmanGraphics.setAlpha(0);
         }
         isHidden = !isHidden;
       }, 100);
 
       setTimeout(() => {
         clearInterval(blinkInterval);
-        pacman.setVisible(true);
+        pacmanGraphics.setAlpha(1);
       }, 1000);
     }
 
@@ -287,20 +320,28 @@ export class Game3 extends Scene {
         const currentLevel = Number(localStorage.getItem('level'));
         const correctData = levelData[currentLevel - 1];
 
-        const centerX = startX + col * cellWidth + cellWidth / 3.5;
-        const centerY = startY + row * cellHeight + cellHeight / 3.5;
+        const centerX = startX + col * cellWidth + cellWidth / 2;
+        const centerY = startY + row * cellHeight + cellHeight / 2;
         if (correctData && row === correctData.row && col === correctData.col) {
-          pacman.setPosition(centerX, centerY);
+          // pacmanGraphics.setPosition(centerX, centerY);
 
+          // pacmanGraphics.x = centerX;
+          // pacmanGraphics.y = centerY;
+          pacmanTween.stop(); // Stop the tween before changing the position
+          pacmanTween = createPacmanTween(scene, centerX, centerY); // Recreate the tween
+          pacmanTween.restart(); // Restart the tween
+          console.log(pacmanTween);
           showStar(scene, cell);
           increaseLevel();
           score += 1;
           localStorage.setItem('score', score.toString());
           updateScoreText();
         } else {
-          score -= 1;
-          localStorage.setItem('score', score.toString());
-          updateScoreText();
+          if (score >= 0) {
+            score -= 1;
+            localStorage.setItem('score', score.toString());
+            updateScoreText();
+          }
           remainingLives -= 1;
           localStorage.setItem('remainingLives', remainingLives.toString());
           updateLiveText();
@@ -311,14 +352,14 @@ export class Game3 extends Scene {
           } else if (localStorage.getItem('remainingLives') === "0") {
             showGhost(scene, cell, 'red_ghost');
           }
-          tryAgainAudio.play();
+          if (remainingLives >= 0) {
+            tryAgainAudio.play();
+          }
 
           if (remainingLives < 0) {
             console.log(`Game over!`);
             localStorage.setItem('lesson3', 'failed');
-            setTimeout(() => {
-              tryNextTimeAudio.play();
-            }, 1500);
+            tryNextTimeAudio.play();
             addDialogWindow();
           }
         }
