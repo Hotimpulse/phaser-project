@@ -21,6 +21,10 @@ export function init(targetDiv) {
                 game.canvas.style.height = `70%`;
             }
         },
+        scale: {
+            mode: Phaser.Scale.ScaleModes.FIT,
+            autoCenter: Phaser.Scale.Center.CENTER_BOTH
+        }
     };
     console.log('Scenes registered:', config.scene);
     const game = new Phaser.Game(config);

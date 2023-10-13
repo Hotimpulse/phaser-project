@@ -7,9 +7,6 @@ import clickSound from '../assets/sounds/click.mp3';
 import correctSound from '../assets/sounds/correct_answer.mp3';
 import correctSound2 from '../assets/sounds/correct2.mp3';
 import endGameSound from '../assets/sounds/endgame.mp3';
-import mainTaskSound from '../assets/sounds/game3_maintask.mp3';
-import mainTaskSound2 from '../assets/sounds/game3_maintask1.mp3';
-import mainTaskSound3 from '../assets/sounds/game3_maintask2.mp3';
 
 import try_again from '../assets/sounds/try_again.mp3';
 import tryNextTime from '../assets/sounds/try_next_time.mp3';

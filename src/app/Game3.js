@@ -11,6 +11,7 @@ export class Game3 extends Scene {
     this.load.svg('startButton', './assets/SVG/close.svg');
     this.load.image('layer1', './assets/imgs/bg_layer1.png');
     this.load.image('layer2', './assets/imgs/bg_layer2.png');
+    this.load.image('final_screen', './assets/imgs/final_screen_graphics.png');
 
     this.load.svg('sound_icon', './assets/SVG/sound_icon.svg');
     this.load.svg('close_icon', './assets/SVG/close.svg');
@@ -51,8 +52,6 @@ export class Game3 extends Scene {
     return grid;
   }
 
-
-
   create() {
     const scene = this;
     let isAudioPlaying = false;
@@ -66,7 +65,6 @@ export class Game3 extends Scene {
     this.add.image(240, 700, 'rect_small');
     this.add.image(150, 140, 'profile_icon');
     this.add.sprite(1180, 540, 'main-rect');
-
     // sound button behavior
     const soundIcon = this.add.sprite(660, 145, 'sound_icon');
     soundIcon.setInteractive();
@@ -83,7 +81,6 @@ export class Game3 extends Scene {
     // stars and hearts
     function trackStarsAndHearts() {
       const sceneWidth = 1920;
-      // const sceneHeight = 1080;
       let heartsNum = Number(localStorage.getItem('remainingLives')) || 0;
       let starsNum = Number(localStorage.getItem('score')) || 0;
 
@@ -101,11 +98,9 @@ export class Game3 extends Scene {
         const star = scene.add.sprite(sceneWidth - 200, 300 + i * 150, 'starSpecial');
         star.setScale(1);
       }
-
     }
     trackStarsAndHearts();
     let interval = setInterval(trackStarsAndHearts, 100);
-
 
     //  The text
     profileName = `User`;
@@ -296,11 +291,11 @@ export class Game3 extends Scene {
           localStorage.setItem('remainingLives', remainingLives.toString());
           updateLiveText();
           if (localStorage.getItem('remainingLives') === "2") {
-            showGhost(scene, cell, 'red_ghost');
+            showGhost(scene, cell, 'blue_ghost');
           } else if (localStorage.getItem('remainingLives') === "1") {
             showGhost(scene, cell, 'yellow_ghost');
           } else if (localStorage.getItem('remainingLives') === "0") {
-            showGhost(scene, cell, 'blue_ghost');
+            showGhost(scene, cell, 'red_ghost');
           }
           tryAgainAudio.play();
 
@@ -322,37 +317,59 @@ export class Game3 extends Scene {
           cell.disableInteractive();
         });
       });
+      clearInterval(interval); // clearing the hearts and stars, prevents them from appearing on top of the game
 
-      let dialogWindow = document.createElement('dialog');
-      dialogWindow.setAttribute('id', 'dialog-loss');
-      document.body.appendChild(dialogWindow);
-      let closeDialogBtn = document.createElement('button');
-      closeDialogBtn.innerText = `Закрыть`;
+      // let dialogWindow = document.createElement('dialog');
+      // dialogWindow.setAttribute('id', 'dialog-loss');
+      // document.body.appendChild(dialogWindow);
+      // let closeDialogBtn = document.createElement('button');
+      // closeDialogBtn.innerText = `Закрыть`;
 
       if (localStorage.getItem('lesson3') === 'failed') {
-        dialogWindow.showModal();
-        dialogWindow.style.visibility = 'visible';
-        dialogWindow.textContent = `В следующий раз получится!`;
-        dialogWindow.appendChild(closeDialogBtn);
-
-        closeDialogBtn.addEventListener('click', () => {
-          dialogWindow.close();
-          document.body.removeChild(dialogWindow);
-          window.location.reload();
+        scene.add.image(1920 / 2, 1080 / 2, 'final_screen');
+        scene.add.text(1920 / 3, 1080 / 2, `В следующий раз получится!`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#FFF' });
+        let closeIcon = scene.add.sprite(1920 / 2, 700, 'close_icon');
+        closeIcon.setScale(1.5);
+        closeIcon.setInteractive();
+        closeIcon.on('pointerdown', () => {
           localStorage.clear();
-        });
+          window.location.reload();
+        })
+        // dialogWindow.showModal();
+        // dialogWindow.style.visibility = 'visible';
+        // dialogWindow.textContent = `В следующий раз получится!`;
+        // dialogWindow.appendChild(closeDialogBtn);
+
+        // closeDialogBtn.addEventListener('click', () => {
+        //   dialogWindow.close();
+        //   document.body.removeChild(dialogWindow);
+        //   window.location.reload();
+        //   localStorage.clear();
+        // });
       } else {
-        dialogWindow.showModal();
-        dialogWindow.style.visibility = 'visible';
-        dialogWindow.textContent = `Здорово! Так держать!`;
-        dialogWindow.appendChild(closeDialogBtn);
-
-        closeDialogBtn.addEventListener('click', () => {
-          dialogWindow.close();
-          document.body.removeChild(dialogWindow);
-          window.location.reload();
+        scene.add.image(1920 / 2, 1080 / 2, 'final_screen');
+        scene.add.text(1920 / 3, 1080 / 2, `Ты сегодня молодец!
+        У тебя ${localStorage.getItem('score')}`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#FFF' });
+        let lilStar = scene.add.sprite(990, 632, 'star');
+        lilStar.setScale(0.5);
+        let closeIcon = scene.add.sprite(1920 / 2, 700, 'close_icon');
+        closeIcon.setScale(1.5);
+        closeIcon.setInteractive();
+        closeIcon.on('pointerdown', () => {
           localStorage.clear();
-        });
+          window.location.reload();
+        })
+        // dialogWindow.showModal();
+        // dialogWindow.style.visibility = 'visible';
+        // dialogWindow.textContent = `Здорово! Так держать!`;
+        // dialogWindow.appendChild(closeDialogBtn);
+
+        // closeDialogBtn.addEventListener('click', () => {
+        //   dialogWindow.close();
+        //   document.body.removeChild(dialogWindow);
+        //   window.location.reload();
+        //   localStorage.clear();
+        // });
       }
     }
 
