@@ -15,12 +15,6 @@ export function init(targetDiv) {
             createContainer: true
         },
         scene: [LoadingScene, Game3],
-        // callbacks: {
-        //     postBoot: function (game) {
-        //         game.canvas.style.width = `100%`;
-        //         game.canvas.style.height = `100%`;
-        //     }
-        // },
         scale: {
             mode: Phaser.Scale.ScaleModes.FIT,
             autoCenter: Phaser.Scale.Center.CENTER_BOTH

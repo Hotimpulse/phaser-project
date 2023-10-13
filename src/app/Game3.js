@@ -312,41 +312,30 @@ export class Game3 extends Scene {
     }
 
     function addDialogWindow() {
+
       grid.forEach(row => {
         row.forEach(cell => {
           cell.disableInteractive();
         });
       });
+
       clearInterval(interval); // clearing the hearts and stars, prevents them from appearing on top of the game
 
-      // let dialogWindow = document.createElement('dialog');
-      // dialogWindow.setAttribute('id', 'dialog-loss');
-      // document.body.appendChild(dialogWindow);
-      // let closeDialogBtn = document.createElement('button');
-      // closeDialogBtn.innerText = `Закрыть`;
-
       if (localStorage.getItem('lesson3') === 'failed') {
+
         scene.add.image(1920 / 2, 1080 / 2, 'final_screen');
         scene.add.text(1920 / 3, 1080 / 2, `В следующий раз получится!`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#FFF' });
         let closeIcon = scene.add.sprite(1920 / 2, 700, 'close_icon');
         closeIcon.setScale(1.5);
         closeIcon.setInteractive();
+
         closeIcon.on('pointerdown', () => {
           localStorage.clear();
           window.location.reload();
-        })
-        // dialogWindow.showModal();
-        // dialogWindow.style.visibility = 'visible';
-        // dialogWindow.textContent = `В следующий раз получится!`;
-        // dialogWindow.appendChild(closeDialogBtn);
+        });
 
-        // closeDialogBtn.addEventListener('click', () => {
-        //   dialogWindow.close();
-        //   document.body.removeChild(dialogWindow);
-        //   window.location.reload();
-        //   localStorage.clear();
-        // });
       } else {
+
         scene.add.image(1920 / 2, 1080 / 2, 'final_screen');
         scene.add.text(1920 / 3, 1080 / 2, `Ты сегодня молодец!
         У тебя ${localStorage.getItem('score')}`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#FFF' });
@@ -355,21 +344,11 @@ export class Game3 extends Scene {
         let closeIcon = scene.add.sprite(1920 - 100, 100, 'close_icon');
         closeIcon.setScale(1.5);
         closeIcon.setInteractive();
+
         closeIcon.on('pointerdown', () => {
           localStorage.clear();
           window.location.reload();
-        })
-        // dialogWindow.showModal();
-        // dialogWindow.style.visibility = 'visible';
-        // dialogWindow.textContent = `Здорово! Так держать!`;
-        // dialogWindow.appendChild(closeDialogBtn);
-
-        // closeDialogBtn.addEventListener('click', () => {
-        //   dialogWindow.close();
-        //   document.body.removeChild(dialogWindow);
-        //   window.location.reload();
-        //   localStorage.clear();
-        // });
+        });
       }
     }
 

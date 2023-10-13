@@ -72,6 +72,7 @@ export class LoadingScene extends Scene {
     }
 
     async create() {
+
         this.add.image(1920 / 2, 1080 / 2, 'bg');
         const blackOverlay = this.add.graphics();
         blackOverlay.fillStyle(0x000000, 0.5);
@@ -82,17 +83,22 @@ export class LoadingScene extends Scene {
             this.game.config.height / 2,
             'startButton'
         );
+
         startButton.on('pointerover', () => {
             startButton.setTexture('soundButton');
         });
+
         startButton.on('pointerout', () => {
             startButton.setTexture('startButton');
         });
+
         startButton.setInteractive();
 
         startButton.on('pointerdown', () => {
+
             let isPlaying = false;
             playMainTaskAudio(this);
+            
             if (!isPlaying) {
                 startButton.disableInteractive();
                 setTimeout(() => {
