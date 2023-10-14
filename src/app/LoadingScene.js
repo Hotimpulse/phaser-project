@@ -65,7 +65,6 @@ export class LoadingScene extends Scene {
 
         this.load.image('bg', './assets/imgs/screen_load.png');
         this.load.svg('startButton', './assets/SVG/icon_start.svg', { width: 200, height: 200 });
-        // this.load.svg('soundButton', './assets/SVG/sound_btn.svg', { width: 150, height: 150 });
         for (let i = 0; i < 10; i++) {
             this.load.image('bg' + i, './assets/imgs/screen_load.png');
         }
@@ -94,14 +93,6 @@ export class LoadingScene extends Scene {
             this.game.config.height / 2,
             'startButton'
         );
-
-        // startButton.on('pointerover', () => {
-        //     startButton.setTexture('soundButton');
-        // });
-
-        // startButton.on('pointerout', () => {
-        //     startButton.setTexture('startButton');
-        // });
 
         startButton.setInteractive();
 
