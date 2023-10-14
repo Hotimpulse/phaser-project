@@ -26,12 +26,15 @@ export class Game3 extends Scene {
     this.load.svg('card', './assets/SVG/tile.svg', { width: 240, height: 240 });
 
     // this.load.spritesheet('pacman', './assets/SVG/pacman.svg', { frameWidth: 107, frameHeight: 112 });
+    this.load.svg('greyedStar', './assets/SVG/greyed_star.svg', { width: 100, height: 100 });
     this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
     this.load.svg('starSpecial', './assets/SVG/star.svg', { width: 100, height: 100 });
     this.load.svg('heart', './assets/SVG/heart.svg', { width: 100, height: 100 });
+    this.load.svg('greyedHeart', './assets/SVG/greyed_heart.svg', { width: 100, height: 100 });
     this.load.svg('red_ghost', './assets/SVG/red_ghost.svg');
     this.load.svg('yellow_ghost', './assets/SVG/yellow_ghost.svg');
     this.load.svg('blue_ghost', './assets/SVG/blue_ghost.svg');
+    playMainTaskAudio(this);
   }
 
   createGrid(rows, cols, startX, startY, cellWidth, cellHeight) {
@@ -56,8 +59,8 @@ export class Game3 extends Scene {
   }
 
   create() {
+
     const scene = this;
-    let isAudioPlaying = false;
     let text1, text2, profileName;
     let gameOver = false;
     this.add.image(1920 / 2, 1080 / 2, 'layer1');
@@ -68,6 +71,7 @@ export class Game3 extends Scene {
     this.add.image(240, 700, 'rect_small');
     this.add.image(150, 140, 'profile_icon');
     this.add.sprite(1180, 540, 'main-rect');
+
     // full screen btn
     const fullScreenBtn = this.add.sprite(1920 - 100, 1080 - 100, 'full-screen-button');
     fullScreenBtn.setScale(3);
@@ -105,13 +109,21 @@ export class Game3 extends Scene {
       existingHearts.forEach(heart => heart.destroy());
       existingStars.forEach(star => star.destroy());
 
+      for (let i = 0; i < 5; i++) {
+        const greyedStar = scene.add.sprite(sceneWidth - 200, 270 + i * 150, 'greyedStar');
+        // greyedStar.setScale(1);
+      }
+      for (let i = 0; i < 3; i++) {
+        const greyedHeart = scene.add.sprite(650, 270 + i * 150, 'greyedHeart');
+        // greyedHeart.setScale(1);
+      }
       for (let i = 0; i < heartsNum; i++) {
-        const heart = scene.add.sprite(650, 300 + i * 150, 'heart');
-        heart.setScale(1);
+        const heart = scene.add.sprite(650, 270 + i * 150, 'heart');
+        // heart.setScale(1);
       }
       for (let i = 0; i < starsNum; i++) {
-        const star = scene.add.sprite(sceneWidth - 200, 300 + i * 150, 'starSpecial');
-        star.setScale(1);
+        const star = scene.add.sprite(sceneWidth - 200, 270 + i * 150, 'starSpecial');
+        // star.setScale(1);
       }
     }
     trackStarsAndHearts();
@@ -156,7 +168,7 @@ export class Game3 extends Scene {
           const t = tween.getValue();
 
           pacmanGraphics.clear();
-          pacmanGraphics.fillStyle(0xffff00, 1);
+          pacmanGraphics.fillStyle(0xffff00, 0.9);
           pacmanGraphics.slice(x, y, 60, Phaser.Math.DegToRad(330 + t), Phaser.Math.DegToRad(30 - t), true);
           pacmanGraphics.fillPath();
         }
@@ -202,8 +214,10 @@ export class Game3 extends Scene {
 
     const loadLevel = {
       1: () => {
-        playTaskAudio(this, 1);
-        playGame(1, 0);
+        setTimeout(() => {
+          playTaskAudio(this, 1);
+          playGame(1, 0);
+        }, 12000)
       },
       2: () => {
         playTaskAudio(this, 2);
@@ -278,10 +292,11 @@ export class Game3 extends Scene {
       const ghost = scene.add.sprite(cell.x, cell.y, `${ghostColor}`).setOrigin(0, 0);
       scene.tweens.add({
         targets: ghost,
-        scaleX: 10,
-        scaleY: 10,
+        rotation: Math.PI * 4,
+        scaleX: 6,
+        scaleY: 6,
         alpha: 0,
-        duration: 600,
+        duration: 1600,
         ease: 'Linear',
         onComplete: () => {
           ghost.setVisible(false);
@@ -323,21 +338,17 @@ export class Game3 extends Scene {
         const centerX = startX + col * cellWidth + cellWidth / 2;
         const centerY = startY + row * cellHeight + cellHeight / 2;
         if (correctData && row === correctData.row && col === correctData.col) {
-          // pacmanGraphics.setPosition(centerX, centerY);
+          pacmanTween.stop(); // Stops the tween before changing the position
+          pacmanTween = createPacmanTween(scene, centerX, centerY); // Recreates the tween
+          pacmanTween.restart(); // Restarts the tween
 
-          // pacmanGraphics.x = centerX;
-          // pacmanGraphics.y = centerY;
-          pacmanTween.stop(); // Stop the tween before changing the position
-          pacmanTween = createPacmanTween(scene, centerX, centerY); // Recreate the tween
-          pacmanTween.restart(); // Restart the tween
-          console.log(pacmanTween);
           showStar(scene, cell);
           increaseLevel();
           score += 1;
           localStorage.setItem('score', score.toString());
           updateScoreText();
         } else {
-          if (score >= 0) {
+          if (score > 0) {
             score -= 1;
             localStorage.setItem('score', score.toString());
             updateScoreText();

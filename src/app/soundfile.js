@@ -9,9 +9,6 @@ export async function playMainTaskAudio(scene) {
         task3Sound.play();
         task3Sound.onended = () => {
             task1Sound.play();
-            task1Sound.onended = () => {
-                scene.input.enabled = true;
-            }
         }
     }
 }
