@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import { playTaskAudio, correctAudio1, correctAudio2, endGameAudio, wrongChoiceAudio, tryAgainAudio, tryNextTimeAudio } from "./scenarios";
 import { playMainTaskAudio } from './soundfile';
+import css from "../styles/index.css";
 
 export class Game3 extends Scene {
   constructor() {
@@ -9,6 +10,7 @@ export class Game3 extends Scene {
 
   preload() {
     this.load.svg('startButton', './assets/SVG/close.svg');
+    this.load.svg('greyMedal', './assets/SVG/grey_medal.svg');
     this.load.svg('full-screen-button', './assets/SVG/full_screen_icon.svg');
     this.load.image('layer1', './assets/imgs/bg_layer1.png');
     this.load.image('layer2', './assets/imgs/bg_layer2.png');
@@ -25,7 +27,6 @@ export class Game3 extends Scene {
     this.load.image('main-rect', './assets/imgs/rectangle-main.png');
     this.load.svg('card', './assets/SVG/tile.svg', { width: 240, height: 240 });
 
-    // this.load.spritesheet('pacman', './assets/SVG/pacman.svg', { frameWidth: 107, frameHeight: 112 });
     this.load.svg('greyedStar', './assets/SVG/greyed_star.svg', { width: 100, height: 100 });
     this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
     this.load.svg('starSpecial', './assets/SVG/star.svg', { width: 100, height: 100 });
@@ -34,7 +35,6 @@ export class Game3 extends Scene {
     this.load.svg('red_ghost', './assets/SVG/red_ghost.svg');
     this.load.svg('yellow_ghost', './assets/SVG/yellow_ghost.svg');
     this.load.svg('blue_ghost', './assets/SVG/blue_ghost.svg');
-    playMainTaskAudio(this);
   }
 
   createGrid(rows, cols, startX, startY, cellWidth, cellHeight) {
@@ -59,21 +59,102 @@ export class Game3 extends Scene {
   }
 
   create() {
-
+    playMainTaskAudio(this);
     const scene = this;
+    //global variables
+    let fontInPixels = '24px';
+    let mainBlue = '#3C90DE';
+    let sceneWidth = 1920;
+    let sceneHeight = 1080;
+    let timedEvent;
+    let initialTime;
+    let progressBar, greyMedal;
     let text1, text2, profileName;
     let gameOver = false;
-    this.add.image(1920 / 2, 1080 / 2, 'layer1');
-    this.add.image(1920 / 2, 1080 / 2, 'layer2');
+    this.add.image(sceneWidth / 2, sceneHeight / 2, 'layer1');
+    this.add.image(sceneWidth / 2, sceneHeight / 2, 'layer2');
     this.add.image(240, 140, 'rect_name');
     this.add.image(240, 380, 'rect_points');
     this.add.image(240, 570, 'rect_small');
     this.add.image(240, 700, 'rect_small');
     this.add.image(150, 140, 'profile_icon');
     this.add.sprite(1180, 540, 'main-rect');
+    let timerText = scene.add.text(110, 430, 'До конца уровня: 3:00', { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
+
+
+    // timer-countdown
+
+    function startTimer() {
+      initialTime = 180;
+
+      timerText.setText('До конца уровня: ' + formatTime(initialTime));
+
+      timedEvent = scene.time.addEvent({ delay: 1000, callback: onEvent, callbackScope: this, loop: true });
+
+      if (initialTime === 0) {
+        resetTimer();
+      }
+    }
+
+    function formatTime(seconds) {
+      var minutes = Math.floor(seconds / 60);
+      var partInSeconds = seconds % 60;
+      partInSeconds = partInSeconds.toString().padStart(2, '0');
+      return `${minutes}:${partInSeconds}`;
+    }
+
+    function onEvent() {
+      if (initialTime > 0) {
+        initialTime -= 1;
+        timerText.setText('До конца уровня: ' + formatTime(initialTime));
+
+        if (initialTime === 0) {
+          timerText.setText('До конца уровня: 00:00');
+          addDialogWindow();
+        }
+      }
+    }
+
+    function resetTimer() {
+      console.log('resetting the timer');
+      timedEvent.remove(false);
+      timerText.destroy();
+      timerText = scene.add.text(110, 430, 'До конца уровня: 3:00', { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
+      startTimer();
+    }
+
+    startTimer();
+
+    // progressbar and medals
+
+    function createProgressBar() {
+      for (let i = 0; i < 5; i++) {
+        greyMedal = scene.add.sprite(120 + i * 60, 580, 'greyMedal');
+      }
+      progressBar = scene.add.graphics();
+
+      progressBar.fillStyle(0x000000, 0.8);
+      progressBar.fillRect(70, 685, 340, 30);
+
+      progressBar.fillStyle(0xffffff, 1);
+
+      updateProgressBar(0);
+    }
+
+    function updateProgressBar(value) {
+      progressBar.clear();
+      progressBar.fillStyle(0x000000, 0.8);
+      progressBar.fillRoundedRect(70, 685, 340, 30, 10);
+
+      progressBar.fillStyle(0x00ffff, 1);
+      progressBar.fillRect(70, 685, (340) * value, 30);
+    }
+
+    createProgressBar(this);
+
 
     // full screen btn
-    const fullScreenBtn = this.add.sprite(1920 - 100, 1080 - 100, 'full-screen-button');
+    const fullScreenBtn = this.add.sprite(sceneWidth - 100, sceneHeight - 100, 'full-screen-button');
     fullScreenBtn.setScale(3);
     fullScreenBtn.setInteractive().on('pointerup', function () {
 
@@ -99,7 +180,6 @@ export class Game3 extends Scene {
 
     // stars and hearts
     function trackStarsAndHearts() {
-      const sceneWidth = 1920;
       let heartsNum = Number(localStorage.getItem('remainingLives')) || 0;
       let starsNum = Number(localStorage.getItem('score')) || 0;
 
@@ -110,19 +190,19 @@ export class Game3 extends Scene {
       existingStars.forEach(star => star.destroy());
 
       for (let i = 0; i < 5; i++) {
-        const greyedStar = scene.add.sprite(sceneWidth - 200, 270 + i * 150, 'greyedStar');
+        const greyedStar = scene.add.sprite(sceneWidth - 1280, 270 + i * 150, 'greyedStar');
         // greyedStar.setScale(1);
       }
       for (let i = 0; i < 3; i++) {
-        const greyedHeart = scene.add.sprite(650, 270 + i * 150, 'greyedHeart');
+        const greyedHeart = scene.add.sprite(sceneWidth - 220, 270 + i * 150, 'greyedHeart');
         // greyedHeart.setScale(1);
       }
       for (let i = 0; i < heartsNum; i++) {
-        const heart = scene.add.sprite(650, 270 + i * 150, 'heart');
+        const heart = scene.add.sprite(sceneWidth - 220, 270 + i * 150, 'heart');
         // heart.setScale(1);
       }
       for (let i = 0; i < starsNum; i++) {
-        const star = scene.add.sprite(sceneWidth - 200, 270 + i * 150, 'starSpecial');
+        const star = scene.add.sprite(sceneWidth - 1280, 270 + i * 150, 'starSpecial');
         // star.setScale(1);
       }
     }
@@ -131,17 +211,24 @@ export class Game3 extends Scene {
 
     //  The text
     profileName = `User`;
-    this.add.text(250, 100, `${profileName}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: 'black' });
-    text1 = this.add.text(650, 60, `Поиск сокровищ`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#B7C4DD' });
-    text2 = this.add.text(650, 135, `Помоги пакману в поиске звёздочек. Получи 5 звёзд и открой секретный сундук!`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#B7C4DD' });
+    scene.add.text(250, 100, `${profileName}`, { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
+    text1 = scene.add.text(650, 60, `Путешественник`, { fontFamily: 'Recoleta', fontSize: '3.375rem', fill: '#B7C4DD' });
+    text2 = scene.add.text(650, 135, `Помоги пакману собрать звёздочки. По команде мысленно перемещай его 
+на 1 шаг по полю. Нажми на клетку, где он остановился. У тебя в запасе 3 попытки.`, { fontFamily: 'Inter', fontSize: fontInPixels, fill: '#B7C4DD' });
     let hasWon;
     localStorage.setItem('remainingLives', 3);
     localStorage.setItem('score', 0);
     let remainingLives = Number(localStorage.getItem('remainingLives'));
     let score = Number(localStorage.getItem('score'));
+    let liveText = scene.add.text(175, 330, `${localStorage.getItem('remainingLives')}`, { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
+    let scoreText = scene.add.text(175, 380, `${localStorage.getItem('score')}`, { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
+    updateText();
 
-    let liveText = this.add.text(120, 350, `Жизни: ${localStorage.getItem('remainingLives')}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#black' });
-    let scoreText = this.add.text(120, 390, `Очки: ${localStorage.getItem('score')}`, { fontFamily: 'RecoletaRegular', fontSize: '1.5rem', fill: '#black' });
+
+    let lilStar = scene.add.sprite(150, 395, 'star');
+    lilStar.setScale(0.3);
+    let lilHearts = scene.add.sprite(150, 345, 'greyedHeart');
+    lilHearts.setScale(0.3);
 
     const startX = 820;
     const startY = 220;
@@ -149,10 +236,8 @@ export class Game3 extends Scene {
     const cellHeight = 240;
     const cellRowCount = 3;
     const cellColCount = 3;
-    const grid = this.createGrid(cellRowCount, cellColCount, startX, startY, cellWidth, cellHeight);
-    this.add.sprite(1180, 580, 'border');
-
-    // const pacman = this.add.sprite(1130, 775, 'pacman').setOrigin(0, 0);
+    const grid = scene.createGrid(cellRowCount, cellColCount, startX, startY, cellWidth, cellHeight);
+    scene.add.sprite(1180, 580, 'border');
 
     // creating an animated pacman character
     let pacmanGraphics, pacmanTween;
@@ -191,12 +276,9 @@ export class Game3 extends Scene {
       { row: 0, col: 0 }
     ];
 
-    function updateLiveText() {
+    function updateText() {
       let livesNumber = Number(localStorage.getItem('remainingLives'));
       liveText.setText(`Жизни: ${livesNumber}`);
-    }
-
-    function updateScoreText() {
       let scoreNumber = Number(localStorage.getItem('score'));
       scoreText.setText(`Очки: ${scoreNumber}`);
     }
@@ -337,34 +419,37 @@ export class Game3 extends Scene {
 
         const centerX = startX + col * cellWidth + cellWidth / 2;
         const centerY = startY + row * cellHeight + cellHeight / 2;
+
+        updateProgressBar(currentLevel * 0.2); // 0.2 is the coefficient for the percentages in the progress bar, stems from having 5 levels (0.2 * 5 = 100% filled)
+
         if (correctData && row === correctData.row && col === correctData.col) {
-          pacmanTween.stop(); // Stops the tween before changing the position
-          pacmanTween = createPacmanTween(scene, centerX, centerY); // Recreates the tween
-          pacmanTween.restart(); // Restarts the tween
+          pacmanTween.stop();
+          pacmanTween = createPacmanTween(scene, centerX, centerY);
+          pacmanTween.restart();
 
           showStar(scene, cell);
           increaseLevel();
           score += 1;
           localStorage.setItem('score', score.toString());
-          updateScoreText();
+          localStorage.setItem('remainingLives', '3');
+          updateText();
+          resetTimer();
         } else {
           if (score > 0) {
             score -= 1;
             localStorage.setItem('score', score.toString());
-            updateScoreText();
+            updateText();
           }
           remainingLives -= 1;
           localStorage.setItem('remainingLives', remainingLives.toString());
-          updateLiveText();
+          updateText();
+          playTaskAudio(scene, parseInt(localStorage.getItem('level')));
           if (localStorage.getItem('remainingLives') === "2") {
             showGhost(scene, cell, 'blue_ghost');
           } else if (localStorage.getItem('remainingLives') === "1") {
             showGhost(scene, cell, 'yellow_ghost');
           } else if (localStorage.getItem('remainingLives') === "0") {
             showGhost(scene, cell, 'red_ghost');
-          }
-          if (remainingLives >= 0) {
-            tryAgainAudio.play();
           }
 
           if (remainingLives < 0) {
@@ -385,13 +470,13 @@ export class Game3 extends Scene {
         });
       });
 
-      clearInterval(interval); // clearing the hearts and stars, prevents them from appearing on top of the game
+      clearInterval(interval);
 
       if (localStorage.getItem('lesson3') === 'failed') {
 
-        scene.add.image(1920 / 2, 1080 / 2, 'final_screen');
-        scene.add.text(1920 / 3, 1080 / 2, `В следующий раз получится!`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#FFF' });
-        let closeIcon = scene.add.sprite(1920 / 2, 700, 'close_icon');
+        scene.add.image(sceneWidth / 2, sceneHeight / 2, 'final_screen');
+        scene.add.text(sceneWidth / 3, sceneHeight / 2, `В следующий раз получится!`, { fontFamily: 'Inter', fontSize: '3.375rem', fill: '#FFF' });
+        let closeIcon = scene.add.sprite(sceneWidth / 2, 700, 'close_icon');
         closeIcon.setScale(1.5);
         closeIcon.setInteractive();
 
@@ -402,15 +487,14 @@ export class Game3 extends Scene {
 
       } else {
 
-        scene.add.image(1920 / 2, 1080 / 2, 'final_screen');
-        scene.add.text(1920 / 3, 1080 / 2, `Ты сегодня молодец!
-        У тебя ${localStorage.getItem('score')}`, { fontFamily: 'RecoletaRegular', fontSize: '3.375rem', fill: '#FFF' });
-        let lilStar = scene.add.sprite(990, 632, 'star');
+        scene.add.image(sceneWidth / 2, sceneHeight / 2, 'final_screen');
+        scene.add.text(sceneWidth / 3, sceneHeight / 2, `Ты сегодня молодец!
+        У тебя ${localStorage.getItem('score')}`, { fontFamily: 'Inter', fontSize: '3.375rem', fill: '#FFF' });
+        let lilStar = scene.add.sprite(1020, 635, 'star');
         lilStar.setScale(0.5);
-        let closeIcon = scene.add.sprite(1920 - 100, 100, 'close_icon');
+        let closeIcon = scene.add.sprite(sceneWidth - 100, 100, 'close_icon');
         closeIcon.setScale(1.5);
         closeIcon.setInteractive();
-
         closeIcon.on('pointerdown', () => {
           localStorage.clear();
           window.location.reload();

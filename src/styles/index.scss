@@ -11,9 +11,16 @@ body {
 }
 
 @font-face {
-  font-family: "RecoletaRegular";
+  font-family: "Recoleta";
   src: url("../assets/fonts/Recoleta/woff/Recoleta Regular.woff") format("woff");
-  font-weight: normal;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../assets/fonts/Inter/Inter-Regular.ttf') format('truetype');
+  font-weight: 400;
   font-style: normal;
 }
 

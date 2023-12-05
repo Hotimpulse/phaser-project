@@ -1,5 +1,4 @@
 import { Scene } from 'phaser';
-import { playMainTaskAudio } from "./soundfile";
 import css from "../styles/index.css";
 export class LoadingScene extends Scene {
     constructor() {
@@ -22,7 +21,7 @@ export class LoadingScene extends Scene {
             y: height / 2 - 50,
             text: 'Загрузка...',
             style: {
-                fontFamily: 'RecoletaRegular',
+                fontFamily: 'Recoleta',
                 fontSize: '40px',
                 fill: '#ffffff'
             }
@@ -34,7 +33,7 @@ export class LoadingScene extends Scene {
             y: height / 2 - 5,
             text: '0%',
             style: {
-                fontFamily: 'RecoletaRegular',
+                fontFamily: 'Recoleta',
                 fontSize: '40px',
                 fill: '#ffffff'
             }
@@ -56,7 +55,7 @@ export class LoadingScene extends Scene {
         });
 
         const textStyle = {
-            fontFamily: 'RecoletaRegular',
+            fontFamily: 'Recoleta',
             fontSize: '40px',
             fill: 'white',
         };
