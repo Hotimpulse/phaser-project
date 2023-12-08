@@ -15,6 +15,7 @@ export class Game3 extends Scene {
     this.load.image('layer1', './assets/imgs/bg_layer1.png');
     this.load.image('layer2', './assets/imgs/bg_layer2.png');
     this.load.image('final_screen', './assets/imgs/final_screen_graphics.png');
+    this.load.image('great_job', './assets/imgs/great_job.png');
     this.load.svg('border', './assets/SVG/border.svg');
 
     this.load.svg('sound_icon', './assets/SVG/sound_icon.svg');
@@ -28,8 +29,8 @@ export class Game3 extends Scene {
     this.load.svg('card', './assets/SVG/tile.svg', { width: 240, height: 240 });
 
     this.load.svg('greyedStar', './assets/SVG/greyed_star.svg', { width: 100, height: 100 });
-    this.load.svg('star', './assets/SVG/star.svg', { width: 100, height: 100 });
-    this.load.svg('starSpecial', './assets/SVG/star.svg', { width: 100, height: 100 });
+    this.load.svg('star', './assets/SVG/star2.svg', { width: 100, height: 100 });
+    this.load.svg('starSpecial', './assets/SVG/star2.svg', { width: 100, height: 100 });
     this.load.svg('heart', './assets/SVG/heart.svg', { width: 100, height: 100 });
     this.load.svg('greyedHeart', './assets/SVG/greyed_heart.svg', { width: 100, height: 100 });
     this.load.svg('red_ghost', './assets/SVG/red_ghost.svg');
@@ -81,7 +82,6 @@ export class Game3 extends Scene {
     this.add.sprite(1180, 540, 'main-rect');
     let timerText = scene.add.text(110, 430, 'До конца уровня: 3:00', { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
 
-
     // timer-countdown
 
     function startTimer() {
@@ -126,11 +126,11 @@ export class Game3 extends Scene {
     startTimer();
 
     // progressbar and medals
+    for (let i = 0; i < 5; i++) {
+      greyMedal = scene.add.sprite(120 + i * 60, 580, 'greyMedal');
+    }
 
     function createProgressBar() {
-      for (let i = 0; i < 5; i++) {
-        greyMedal = scene.add.sprite(120 + i * 60, 580, 'greyMedal');
-      }
       progressBar = scene.add.graphics();
 
       progressBar.fillStyle(0x000000, 0.8);
@@ -144,14 +144,13 @@ export class Game3 extends Scene {
     function updateProgressBar(value) {
       progressBar.clear();
       progressBar.fillStyle(0x000000, 0.8);
-      progressBar.fillRoundedRect(70, 685, 340, 30, 10);
+      progressBar.fillRect(70, 685, 340, 30);
 
       progressBar.fillStyle(0x00ffff, 1);
       progressBar.fillRect(70, 685, (340) * value, 30);
     }
 
     createProgressBar(this);
-
 
     // full screen btn
     const fullScreenBtn = this.add.sprite(sceneWidth - 100, sceneHeight - 100, 'full-screen-button');
@@ -224,7 +223,6 @@ export class Game3 extends Scene {
     let scoreText = scene.add.text(175, 380, `${localStorage.getItem('score')}`, { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
     updateText();
 
-
     let lilStar = scene.add.sprite(150, 395, 'star');
     lilStar.setScale(0.3);
     let lilHearts = scene.add.sprite(150, 345, 'greyedHeart');
@@ -253,7 +251,7 @@ export class Game3 extends Scene {
           const t = tween.getValue();
 
           pacmanGraphics.clear();
-          pacmanGraphics.fillStyle(0xffff00, 0.9);
+          pacmanGraphics.fillStyle(0xF4CD53, 0.9);
           pacmanGraphics.slice(x, y, 60, Phaser.Math.DegToRad(330 + t), Phaser.Math.DegToRad(30 - t), true);
           pacmanGraphics.fillPath();
         }
@@ -407,6 +405,22 @@ export class Game3 extends Scene {
       }, 1000);
     }
 
+    // show on-screen messages
+
+    const showGreatJob = (scene) => {
+      scene.input.enabled = false;
+      const greatJob = scene.add.image(sceneWidth / 2, sceneHeight / 2, 'great_job');
+      greatJob.setDepth(100);
+      const blackVeil = scene.add.rectangle(0, 0, sceneWidth, sceneHeight, 0x000000, 0.5);
+      blackVeil.setOrigin(0, 0);
+      blackVeil.setDepth(99);
+      setTimeout(() => {
+        greatJob.destroy();
+        blackVeil.destroy();
+        scene.input.enabled = true;
+      }, 1000);
+    }
+
     function onCellClick(cell) {
 
       if (!cell.isClicked) {
@@ -434,6 +448,8 @@ export class Game3 extends Scene {
           localStorage.setItem('remainingLives', '3');
           updateText();
           resetTimer();
+          showGreatJob(scene);
+
         } else {
           if (score > 0) {
             score -= 1;
