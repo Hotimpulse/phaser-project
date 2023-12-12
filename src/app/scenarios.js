@@ -12,11 +12,11 @@ import try_again from '../assets/sounds/try_again.mp3';
 import tryNextTime from '../assets/sounds/try_next_time.mp3';
 import wrongChoiceSound from '../assets/sounds/wrong_choice.mp3';
 
-let leftAudio = new Audio(leftSound);
-let rightAudio = new Audio(rightSound);
-let downAudio = new Audio(downSound);
-let upAudio = new Audio(upSound);
-let click = new Audio(clickSound);
+export let leftAudio = new Audio(leftSound);
+export let rightAudio = new Audio(rightSound);
+export let downAudio = new Audio(downSound);
+export let upAudio = new Audio(upSound);
+export let click = new Audio(clickSound);
 
 export let correctAudio1 = new Audio(correctSound);
 export let correctAudio2 = new Audio(correctSound2);
@@ -24,107 +24,3 @@ export let endGameAudio = new Audio(endGameSound);
 export let wrongChoiceAudio = new Audio(wrongChoiceSound);
 export let tryAgainAudio = new Audio(try_again);
 export let tryNextTimeAudio = new Audio(tryNextTime);
-
-export function playTaskAudio(scene, task) {
-    scene.input.enabled = false;
-
-    switch (task) {
-        case 1:
-            playTask1(scene);
-            break;
-        case 2:
-            playTask2(scene);
-            break;
-        case 3:
-            playTask3(scene);
-            break;
-        case 4:
-            playTask4(scene);
-            break;
-        case 5:
-            playTask5(scene);
-            break;
-        default:
-            console.log(`playTaskAudio() plays the audio`);
-    }
-};
-
-function playTask1(scene) {
-    upAudio.play();
-    upAudio.onended = () => {
-        leftAudio.play();
-        leftAudio.onended = () => {
-            click.play();
-            click.onended = () => {
-                scene.input.enabled = true;
-            }
-        };
-    };
-};
-
-function playTask2(scene) {
-    rightAudio.play();
-    rightAudio.onended = () => {
-        rightAudio.play();
-        rightAudio.onended = () => {
-            upAudio.play();
-            upAudio.onended = () => {
-                click.play();
-                click.onended = () => {
-                    scene.input.enabled = true;
-                }
-            }
-        }
-    }
-};
-
-function playTask3(scene) {
-    downAudio.play();
-    downAudio.onended = () => {
-        leftAudio.play();
-        leftAudio.onended = () => {
-            upAudio.play();
-            upAudio.onended = () => {
-                click.play();
-                click.onended = () => {
-                    scene.input.enabled = true;
-                }
-            }
-        }
-    }
-};
-
-function playTask4(scene) {
-    downAudio.play();
-    downAudio.onended = () => {
-        rightAudio.play();
-        rightAudio.onended = () => {
-            downAudio.play();
-            downAudio.onended = () => {
-                click.play();
-                click.onended = () => {
-                    scene.input.enabled = true;
-                }
-            }
-        }
-    }
-};
-
-function playTask5(scene) {
-    upAudio.play();
-    upAudio.onended = () => {
-        leftAudio.play();
-        leftAudio.onended = () => {
-            upAudio.play();
-            upAudio.onended = () => {
-                leftAudio.play();
-                leftAudio.onended = () => {
-                    click.play();
-                    click.onended = () => {
-                        scene.input.enabled = true;
-                    }
-                }
-            }
-        }
-    }
-}; 

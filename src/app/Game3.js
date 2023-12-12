@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { playTaskAudio, correctAudio1, correctAudio2, endGameAudio, wrongChoiceAudio, tryAgainAudio, tryNextTimeAudio } from "./scenarios";
+import { correctAudio1, correctAudio2, endGameAudio, wrongChoiceAudio, tryAgainAudio, tryNextTimeAudio, upAudio, downAudio, leftAudio, rightAudio, click } from "./scenarios";
 import { playMainTaskAudio } from './soundfile';
 import css from "../styles/index.css";
 
@@ -122,8 +122,6 @@ export class Game3 extends Scene {
       timerText = scene.add.text(110, 430, 'До конца уровня: 3:00', { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
       startTimer();
     }
-
-    startTimer();
 
     // progressbar and medals
     for (let i = 0; i < 5; i++) {
@@ -265,14 +263,27 @@ export class Game3 extends Scene {
 
     createPacmanGraphics(this);
 
+    function randomizeLevelData(max, previousPosition) {
+      let newPosition;
+      do {
+        newPosition = {
+          row: Math.floor(Math.random() * max),
+          col: Math.floor(Math.random() * max)
+        };
+      } while (
+        previousPosition &&
+        newPosition.row === previousPosition.row &&
+        newPosition.col === previousPosition.col
+      );
+      return newPosition;
+    }
 
-    const levelData = [
-      { row: 1, col: 0 },
-      { row: 0, col: 2 },
-      { row: 0, col: 1 },
-      { row: 2, col: 2 },
-      { row: 0, col: 0 }
-    ];
+    const levelData = [];
+
+    for (let index = 0; index < 5; index++) {
+      let previousPosition = index > 0 ? levelData[index - 1] : null;
+      levelData.push(randomizeLevelData(3, previousPosition));
+    }
 
     function updateText() {
       let livesNumber = Number(localStorage.getItem('remainingLives'));
@@ -295,25 +306,26 @@ export class Game3 extends Scene {
     const loadLevel = {
       1: () => {
         setTimeout(() => {
-          playTaskAudio(this, 1);
-          playGame(1, 0);
+          const { row, col } = levelData[0];
+          playGame(row, col);
+          startTimer();
         }, 12000)
       },
       2: () => {
-        playTaskAudio(this, 2);
-        playGame(0, 2);
+        const { row, col } = levelData[1];
+        playGame(row, col);
       },
       3: () => {
-        playTaskAudio(this, 3);
-        playGame(0, 1);
+        const { row, col } = levelData[2];
+        playGame(row, col);
       },
       4: () => {
-        playTaskAudio(this, 4);
-        playGame(2, 2);
+        const { row, col } = levelData[3];
+        playGame(row, col);
       },
       5: () => {
-        playTaskAudio(this, 5);
-        playGame(0, 0);
+        const { row, col } = levelData[4];
+        playGame(row, col);
       },
       6: () => {
         addDialogWindow();
@@ -434,9 +446,9 @@ export class Game3 extends Scene {
         const centerX = startX + col * cellWidth + cellWidth / 2;
         const centerY = startY + row * cellHeight + cellHeight / 2;
 
-        updateProgressBar(currentLevel * 0.2); // 0.2 is the coefficient for the percentages in the progress bar, stems from having 5 levels (0.2 * 5 = 100% filled)
 
         if (correctData && row === correctData.row && col === correctData.col) {
+          updateProgressBar(currentLevel * 0.2); // 0.2 is the coefficient for the percentages in the progress bar, stems from having 5 levels (0.2 * 5 = 100% filled)
           pacmanTween.stop();
           pacmanTween = createPacmanTween(scene, centerX, centerY);
           pacmanTween.restart();
@@ -459,7 +471,7 @@ export class Game3 extends Scene {
           remainingLives -= 1;
           localStorage.setItem('remainingLives', remainingLives.toString());
           updateText();
-          playTaskAudio(scene, parseInt(localStorage.getItem('level')));
+          replayLastInstructions();
           if (localStorage.getItem('remainingLives') === "2") {
             showGhost(scene, cell, 'blue_ghost');
           } else if (localStorage.getItem('remainingLives') === "1") {
@@ -539,17 +551,110 @@ export class Game3 extends Scene {
       });
     }
 
-    function playGame(row, col) {
-      let targetCellIndex = row * 3 + col;
+    // logic related to automated sound instructions based on randomly generated levelData - console.log(levelData) to see the unique levels generated with each new game
 
-      // Resetting the click flags when starting a new level
+    let currentPos = { row: 2, col: 1 };
+    let lastInstructions = [];
+
+    function playGame(row, col) {
+      const initialPos = { ...currentPos };
+      const targetPos = { row, col };
+
+      lastInstructions = generateAudioInstructions(initialPos, targetPos);
+      playAudioInstructions(lastInstructions);
+
       grid.forEach(rowArray => {
         rowArray.forEach(cell => {
           cell.isClicked = false;
         });
       });
 
+      currentPos = { ...targetPos };
+
+      let targetCellIndex = row * 3 + col;
+
       attachClickEventsToCells(grid, targetCellIndex, row, col);
+    }
+
+    function replayLastInstructions() {
+      playAudioInstructions(lastInstructions);
+    }
+
+    function generateAudioInstructions(initialPos, targetPos) {
+      let instructions = [];
+
+      let rowDiff = targetPos.row - initialPos.row;
+      let colDiff = targetPos.col - initialPos.col;
+
+      if (rowDiff !== 0 || colDiff !== 0) {
+        if (rowDiff !== 0) {
+          for (let i = 0; i < Math.abs(rowDiff); i++) {
+            if (rowDiff > 0) {
+              instructions.push("down");
+            } else if (rowDiff < 0) {
+              instructions.push("up");
+            }
+          }
+        }
+
+        if (colDiff !== 0) {
+          for (let i = 0; i < Math.abs(colDiff); i++) {
+            if (colDiff > 0) {
+              instructions.push("right");
+            } else if (colDiff < 0) {
+              instructions.push("left");
+            }
+          }
+        }
+
+        instructions.push("go");
+      }
+
+      return instructions;
+    }
+
+    function playAudioInstructions(instructions) {
+      scene.input.enabled = false;
+      let index = 0;
+
+      function playNextInstruction() {
+        if (index < instructions.length) {
+          const instruction = instructions[index];
+          let audio;
+
+          switch (instruction) {
+            case "up":
+              audio = upAudio;
+              break;
+            case "down":
+              audio = downAudio;
+              break;
+            case "left":
+              audio = leftAudio;
+              break;
+            case "right":
+              audio = rightAudio;
+              break;
+            case "go":
+              audio = click;
+              break;
+            default:
+              break;
+          }
+
+          if (audio) {
+            audio.play();
+            audio.onended = () => {
+              index++;
+              playNextInstruction();
+            };
+          }
+        } else {
+          scene.input.enabled = true;
+        }
+      }
+
+      playNextInstruction();
     }
   }
 }
