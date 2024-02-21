@@ -20,7 +20,6 @@ export function init(targetDiv) {
             autoCenter: Phaser.Scale.Center.CENTER_BOTH
         }
     };
-    // console.log('Scenes registered:', config.scene);
     const game = new Phaser.Game(config);
     game.scene.start('LoadingScene');
 }

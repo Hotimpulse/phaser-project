@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { correctAudio1, correctAudio2, endGameAudio, wrongChoiceAudio, tryAgainAudio, tryNextTimeAudio, upAudio, downAudio, leftAudio, rightAudio, click } from "./scenarios";
+import { correctAudio1, wrongChoiceAudio, tryNextTimeAudio, upAudio, downAudio, leftAudio, rightAudio, click, go } from "./scenarios";
 import { playMainTaskAudio } from './soundfile';
 import css from "../styles/index.css";
 
@@ -209,9 +209,9 @@ export class Game3 extends Scene {
     //  The text
     profileName = `User`;
     scene.add.text(250, 100, `${profileName}`, { fontFamily: 'Inter', fontSize: fontInPixels, fill: mainBlue });
-    text1 = scene.add.text(650, 60, `Путешественник`, { fontFamily: 'Recoleta', fontSize: '3.375rem', fill: '#B7C4DD' });
+    text1 = scene.add.text(650, 60, `Путешественник`, { fontFamily: 'Recoleta', fontSize: '3.375rem', fill: '#2DADA0' });
     text2 = scene.add.text(650, 135, `Помоги пакману собрать звёздочки. По команде мысленно перемещай его 
-на 1 шаг по полю. Нажми на клетку, где он остановился. У тебя в запасе 3 попытки.`, { fontFamily: 'Inter', fontSize: fontInPixels, fill: '#B7C4DD' });
+на 1 шаг по полю. Нажми на клетку, где он остановился. У тебя в запасе 3 попытки.`, { fontFamily: 'Inter', fontSize: fontInPixels, fill: '#2DADA0' });
     let hasWon;
     localStorage.setItem('remainingLives', 3);
     localStorage.setItem('score', 0);
@@ -271,9 +271,11 @@ export class Game3 extends Scene {
           col: Math.floor(Math.random() * max)
         };
       } while (
-        previousPosition &&
-        newPosition.row === previousPosition.row &&
-        newPosition.col === previousPosition.col
+        (previousPosition &&
+          Math.abs(newPosition.row - previousPosition.row) < 2 &&
+          Math.abs(newPosition.col - previousPosition.col) < 2) ||
+        (!previousPosition &&
+          (newPosition.row === 2 && newPosition.col === 1))
       );
       return newPosition;
     }
@@ -417,22 +419,6 @@ export class Game3 extends Scene {
       }, 1000);
     }
 
-    // show on-screen messages
-
-    const showGreatJob = (scene) => {
-      scene.input.enabled = false;
-      const greatJob = scene.add.image(sceneWidth / 2, sceneHeight / 2, 'great_job');
-      greatJob.setDepth(100);
-      const blackVeil = scene.add.rectangle(0, 0, sceneWidth, sceneHeight, 0x000000, 0.5);
-      blackVeil.setOrigin(0, 0);
-      blackVeil.setDepth(99);
-      setTimeout(() => {
-        greatJob.destroy();
-        blackVeil.destroy();
-        scene.input.enabled = true;
-      }, 1000);
-    }
-
     function onCellClick(cell) {
 
       if (!cell.isClicked) {
@@ -460,18 +446,12 @@ export class Game3 extends Scene {
           localStorage.setItem('remainingLives', '3');
           updateText();
           resetTimer();
-          showGreatJob(scene);
 
         } else {
-          if (score > 0) {
-            score -= 1;
-            localStorage.setItem('score', score.toString());
-            updateText();
-          }
           remainingLives -= 1;
           localStorage.setItem('remainingLives', remainingLives.toString());
           updateText();
-          replayLastInstructions();
+          if (remainingLives >= 0) replayLastInstructions();
           if (localStorage.getItem('remainingLives') === "2") {
             showGhost(scene, cell, 'blue_ghost');
           } else if (localStorage.getItem('remainingLives') === "1") {
@@ -586,6 +566,8 @@ export class Game3 extends Scene {
       let rowDiff = targetPos.row - initialPos.row;
       let colDiff = targetPos.col - initialPos.col;
 
+      instructions.push("go");
+
       if (rowDiff !== 0 || colDiff !== 0) {
         if (rowDiff !== 0) {
           for (let i = 0; i < Math.abs(rowDiff); i++) {
@@ -607,7 +589,7 @@ export class Game3 extends Scene {
           }
         }
 
-        instructions.push("go");
+        instructions.push("stop");
       }
 
       return instructions;
@@ -635,8 +617,11 @@ export class Game3 extends Scene {
             case "right":
               audio = rightAudio;
               break;
-            case "go":
+            case "stop":
               audio = click;
+              break;
+            case "go":
+              audio = go;
               break;
             default:
               break;
