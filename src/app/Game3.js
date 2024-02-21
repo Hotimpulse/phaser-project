@@ -116,7 +116,6 @@ export class Game3 extends Scene {
     }
 
     function resetTimer() {
-      console.log('resetting the timer');
       timedEvent.remove(false);
       timerText.destroy();
       timerText = scene.add.text(110, 430, 'До конца уровня: 3:00', { fontFamily: 'Inter', fontSize: fontInPixels, fill: `#${mainBlue}` });
@@ -266,28 +265,27 @@ export class Game3 extends Scene {
         };
       } while (
         (previousPosition &&
-          ((Math.abs(newPosition.row - previousPosition.row) < 1 &&
-              Math.abs(newPosition.col - previousPosition.col) < 1) ||
-          (Math.abs(newPosition.row - previousPosition.row) < 1) ||
-          (Math.abs(newPosition.col - previousPosition.col) < 1))) ||
+          (Math.abs(newPosition.row - previousPosition.row) + Math.abs(newPosition.col - previousPosition.col) < 2)) ||
       (!previousPosition &&
-          (newPosition.row === 2 && newPosition.col === 1)) // Ensure the initial position is not too close
+          (newPosition.row === 2 && newPosition.col === 1))
   );
       return newPosition;
     }
 
     const levelData = [];
 
+    let previousPosition = { row: 2, col: 1 };
+
     for (let index = 0; index < 5; index++) {
-      let previousPosition = index > 0 ? levelData[index - 1] : null;
       levelData.push(randomizeLevelData(3, previousPosition));
+      previousPosition = levelData[index];
     }
 
     function updateText() {
       let livesNumber = Number(localStorage.getItem('remainingLives'));
       liveText.setText(`Жизни: ${livesNumber}`);
       let scoreNumber = Number(localStorage.getItem('score'));
-      scoreText.setText(`Очки: ${scoreNumber}`);
+      scoreText.setText(`Звёзды: ${scoreNumber}`);
     }
 
     function increaseLevel() {
@@ -338,7 +336,7 @@ export class Game3 extends Scene {
         let currentLevel = Number(localStorage.getItem('level'));
         (loadLevel[currentLevel] || loadLevel.default)();
       } catch (err) {
-        console.log(`Your error is:`, err);
+        console.error(`Your error is:`, err);
       }
     }
     initializeGame();
@@ -457,7 +455,6 @@ export class Game3 extends Scene {
           }
 
           if (remainingLives < 0) {
-            console.log(`Game over!`);
             localStorage.setItem('lesson3', 'failed');
             tryNextTimeAudio.play();
             addDialogWindow();
@@ -490,19 +487,19 @@ export class Game3 extends Scene {
         });
 
       } else {
-
         scene.add.image(sceneWidth / 2, sceneHeight / 2, 'final_screen');
-        scene.add.text(sceneWidth / 3.4, sceneHeight / 2.5, `Ты сегодня молодец!
-        У тебя ${localStorage.getItem('score')} звёзд`, { fontFamily: 'Recoleta', fontSize: '5rem', fill: '#000000' });
-        // let lilStar = scene.add.sprite(1020, 635, 'star');
-        // lilStar.setScale(0.5);
+
+        scene.add.text(sceneWidth / 3.4, sceneHeight / 2.5, ``, { fontFamily: 'Recoleta', fontSize: '5rem', fill: '#000000' }).setText(['Ты сегодня молодец!', `Звёзд получено: ${localStorage.getItem('score')}`]);
+        
         let closeIcon = scene.add.sprite(sceneWidth - 100, 100, 'close_icon');
         closeIcon.setScale(1.5);
         closeIcon.setInteractive();
+
         closeIcon.on('pointerdown', () => {
           localStorage.clear();
           window.location.reload();
         });
+
       }
     }
 
