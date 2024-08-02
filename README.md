@@ -9,7 +9,3 @@ The game has the following features:
 - landing on the right cell results in awarded points/stars;
 - landing on the wrong cells results in decreased attempts (total 3 wrong tries available);
 
-A screenshot from the game:
-![Game screenshot](src/assets/imgs/game_screenshot.png)
-
-
